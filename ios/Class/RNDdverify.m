@@ -13,11 +13,11 @@
   return YES;
 }
 
-+ (void)setVerifySDKInfo{
++ (void)ddVerifySetVerifySDKInfo:(void (^_Nullable)( NSDictionary * _Nonnull Dic))complete{
  NSString *info = @"2itUZoze3p8lAe1f2CxYWjFuButzB5NId7veWo3g0K2eQ7KP/lpp8ua//fdTMraYXv1ExrFBKh/xOnJpSk9Jv18mpRaaHyuUrefTWdLYTezqyGI2+eVKtd1VUlLX+X2oglQUQlx+hgS65J8aP2NeRV93ex4wIWzvY5XAxwcNrpnqrVpddU+vRmXOOhE0rEfNv8ka4Ht1fpuyd+j0zWLtQyc+1Edm7k3Tt1OwUqiFyBzcnWhBVe0eBg==";
     [UMCommonHandler setVerifySDKInfo:info complete:^(NSDictionary * _Nonnull resultDic) {
         //是否调注册用成功
-        
+        complete(resultDic);
     }];
 }
 
@@ -28,14 +28,26 @@
         return [UMModelCreate createFullScreen];
     }
 }
-
+- (NSArray<NSString *> *)supportedEvents
+{
+  return @[@"RN_DDVERIFY_EVENT"];
+}
 RCT_EXPORT_MODULE(RNDdverify);
-//设置SDK秘钥
-RCT_REMAP_METHOD(setVerifySDKInfo, setVerifySDKInfo:(NSString *)info complete:(RCTResponseSenderBlock)complete ){
-    [RNDdverify setVerifySDKInfo];
+//设置SDK秘钥 RCTPromiseResolveBlock 必须和RCTPromiseRejectBlock配对使用
+RCT_REMAP_METHOD(setVerifySDKInfo, setVerifySDKInfoResolve:(RCTPromiseResolveBlock)Resolve rejecter:(RCTPromiseRejectBlock)reject){
+    
+    [RNDdverify ddVerifySetVerifySDKInfo:^(NSDictionary * _Nonnull Dic) {
+        if([@"600000" isEqual:[Dic objectForKey:@"resultCode"]]){
+            //密钥解析成功
+            Resolve(@{@"resultCode": @"1", @"msg": [Dic objectForKey:@"msg"]});
+        }else{
+            Resolve(@{@"resultCode": @"0", @"msg": @"解密失败"});
+        }
+        
+    }];
 }
 //检查认证环境
-RCT_REMAP_METHOD(checkEnvAvailableWithAuthType, checkEnvAvailableWithAuthType:(NSString *)authType complete:(RCTResponseSenderBlock)complete){
+RCT_REMAP_METHOD(checkEnvAvailableWithAuthType, checkEnvAvailableWithAuthType:(NSString *)authType Resolve:(RCTPromiseResolveBlock)Resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     UMPNSAuthType newAuthType = UMPNSAuthTypeLoginToken;
     
@@ -46,21 +58,30 @@ RCT_REMAP_METHOD(checkEnvAvailableWithAuthType, checkEnvAvailableWithAuthType:(N
         newAuthType = UMPNSAuthTypeVerifyToken;
         
     }
+
     //检查当前环境是否可以认证或者可以一键登录
     if (newAuthType == UMPNSAuthTypeLoginToken || newAuthType == UMPNSAuthTypeVerifyToken) {
-          [UMCommonHandler checkEnvAvailableWithAuthType:UMPNSAuthTypeLoginToken complete:^(NSDictionary * _Nullable resultDic) {
+      [UMCommonHandler checkEnvAvailableWithAuthType:UMPNSAuthTypeLoginToken complete:^(NSDictionary * _Nullable resultDic) {
             //错误码
-            NSLog(@"%@",[resultDic objectForKey:@"resultCode"]);
+          if([@"600000" isEqual:[resultDic objectForKey:@"resultCode"]]){
+              Resolve(@{@"resultCode": @"1", @"msg": @"环境验证通过"});
+          }else{
+              Resolve(@{@"resultCode": @"0", @"msg": @"环境不可用"});
+          }
+          
         }];
     }else {
         //类型不对，直接按照不能使用处理
+        Resolve(@{@"resultCode": @"0", @"msg": @"请设置正确的AuthType"});
     }
 
 }
 //获取UMVerify版本号
-RCT_REMAP_METHOD(getVersion, getVersion){
-    NSLog(@"%@",[UMCommonHandler getVersion]);
+RCT_REMAP_METHOD(getVersion, getVersion:(RCTResponseSenderBlock)complete){
     
+    if (complete) {
+        complete(@[[UMCommonHandler getVersion]]);
+    }
 }
 //一键登录预取号
 RCT_REMAP_METHOD(accelerateLoginPageWithTimeout, accelerateLoginPageWithTimeout:(NSTimeInterval)timeout complete:(RCTResponseSenderBlock)complete){
@@ -70,12 +91,18 @@ RCT_REMAP_METHOD(accelerateLoginPageWithTimeout, accelerateLoginPageWithTimeout:
     }];
 }
 //一键登录获取
-RCT_REMAP_METHOD(getLoginTokenWithTimeout, getLoginTokenWithTimeout:(NSString *)timeout controller:(NSString *)controller model:(NSString *)model complete:(RCTResponseSenderBlock)complete){
+RCT_REMAP_METHOD(getLoginTokenWithTimeout, getLoginTokenWithTimeout:(NSString *)timeout Resolve:(RCTPromiseResolveBlock)Resolve rejecter:(RCTPromiseRejectBlock)reject){
     UMCustomModel * newModel = [RNDdverify buildCustomModel:NO];
        newModel.supportedInterfaceOrientations = UIInterfaceOrientationMaskAllButUpsideDown;
-    [UMCommonHandler getLoginTokenWithTimeout:3 controller:[UIApplication sharedApplication].keyWindow.rootViewController model:newModel complete:^(NSDictionary * _Nonnull resultDic) {
-        
+   
+
+    UIViewController *rootViewController = [UIViewController new];
+    rootViewController.view.frame = [UIScreen mainScreen].bounds;
+    [[UIApplication sharedApplication].keyWindow.rootViewController.view addSubview: rootViewController.view];
+    [UMCommonHandler getLoginTokenWithTimeout: 3 controller:rootViewController model:newModel complete:^(NSDictionary * _Nonnull resultDic) {
+        Resolve(resultDic);
     }];
+    
 }
 //隐藏授权时关闭
 RCT_REMAP_METHOD(hideLoginLoading, hideLoginLoading){

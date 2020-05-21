@@ -9,10 +9,10 @@
   "keywords": [
     "react-native"
   ],
-  "homepage": "https://github.com/kunkun-s/DDVerify.git",
+  "homepage": "https://github.com/kunkun-s/react-native-ddverify.git",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kunkun-s/DDVerify.git"
+    "url": "git+https://github.com/kunkun-s/react-native-ddverify.git"
   },
   "author": "",
   "license": "",

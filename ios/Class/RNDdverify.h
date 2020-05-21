@@ -3,7 +3,7 @@
 #import <React/RCTEventEmitter.h>
 #import "UMModelCreate.h"
 @interface RNDdverify : RCTEventEmitter <RCTBridgeModule>
-+ (void)setVerifySDKInfo;
-+ (UMCustomModel *)buildCustomModel:(BOOL)isAlert;
++ (void)ddVerifySetVerifySDKInfo:(void (^_Nullable)( NSDictionary * _Nonnull Dic))complete;
++ (UMCustomModel * _Nonnull)buildCustomModel:(BOOL)isAlert;
 @end
   

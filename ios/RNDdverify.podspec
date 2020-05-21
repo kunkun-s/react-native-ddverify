@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.description  = <<-DESC
                   RNDdverify
                    DESC
-  s.homepage     = "https://github.com/kunkun-s/DDVerify.git"
+  s.homepage     = "https://github.com/kunkun-s/react-native-ddverify.git"
   # //许可证，除非源代码包含了LICENSE.*或者LICENCE.*文件，否则必须指定许可证文件。文件扩展名可以没有，或者是.txt,.md,.markdown
   s.license      = "MIT"
   # s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
@@ -27,7 +27,7 @@ Pod::Spec.new do |s|
 
   # 获取库的地址 
     # git地址，tag:值以v开头，支持子模块
-  s.source       = { :git => "https://github.com/kunkun-s/DDVerify.git", :tag => "master" }
+  s.source       = { :git => "https://github.com/kunkun-s/react-native-ddverify.git", :tag => "master" }
   
   # 加载文件
   s.source_files  = "Class/**/*.{h,m}"
@@ -48,11 +48,11 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   # spec.static_framework = true
   # 使用系统framework
-  # s.framework =
+   s.framework = "CoreTelephony","SystemConfiguration"
   # 使用第三方framework
   s.vendored_frameworks = 'libs/UMVerify/UMVerify.framework'
-  # 使用系统.a
-  # s.libraries = 
+  # 使用系统.a 去除了lib和.tbd
+   s.libraries = 'z'
   # 使用三方静态库 .a
   # s.vendored_libraries =
   
