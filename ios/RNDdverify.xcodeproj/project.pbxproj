@@ -9,7 +9,8 @@
 /* Begin PBXBuildFile section */
 		C42F1D70247656970088A81A /* UMModelCreate.m in Sources */ = {isa = PBXBuildFile; fileRef = C42F1D6E247656960088A81A /* UMModelCreate.m */; };
 		C42F1D76247656BD0088A81A /* RNDdverify.m in Sources */ = {isa = PBXBuildFile; fileRef = C42F1D74247656BD0088A81A /* RNDdverify.m */; };
-		C42F1D79247656F10088A81A /* DDVerifyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C42F1D77247656F10088A81A /* DDVerifyViewController.m */; };
+		C42F1D812477C9DB0088A81A /* DDVerifyCustomView.m in Sources */ = {isa = PBXBuildFile; fileRef = C42F1D7F2477C9DA0088A81A /* DDVerifyCustomView.m */; };
+		C42F1D822477DA300088A81A /* DDVerifyCustomView.xib in Sources */ = {isa = PBXBuildFile; fileRef = C42F1D802477C9DA0088A81A /* DDVerifyCustomView.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,8 +31,9 @@
 		C42F1D6F247656960088A81A /* UMModelCreate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UMModelCreate.h; path = Class/UMModelCreate.h; sourceTree = "<group>"; };
 		C42F1D74247656BD0088A81A /* RNDdverify.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNDdverify.m; path = Class/RNDdverify.m; sourceTree = "<group>"; };
 		C42F1D75247656BD0088A81A /* RNDdverify.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNDdverify.h; path = Class/RNDdverify.h; sourceTree = "<group>"; };
-		C42F1D77247656F10088A81A /* DDVerifyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDVerifyViewController.m; path = Class/DDVerifyViewController.m; sourceTree = "<group>"; };
-		C42F1D78247656F10088A81A /* DDVerifyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDVerifyViewController.h; path = Class/DDVerifyViewController.h; sourceTree = "<group>"; };
+		C42F1D7E2477C9DA0088A81A /* DDVerifyCustomView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDVerifyCustomView.h; path = Class/DDVerifyCustomView.h; sourceTree = "<group>"; };
+		C42F1D7F2477C9DA0088A81A /* DDVerifyCustomView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDVerifyCustomView.m; path = Class/DDVerifyCustomView.m; sourceTree = "<group>"; };
+		C42F1D802477C9DA0088A81A /* DDVerifyCustomView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = DDVerifyCustomView.xib; path = Class/DDVerifyCustomView.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,8 +58,9 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				C42F1D78247656F10088A81A /* DDVerifyViewController.h */,
-				C42F1D77247656F10088A81A /* DDVerifyViewController.m */,
+				C42F1D7E2477C9DA0088A81A /* DDVerifyCustomView.h */,
+				C42F1D7F2477C9DA0088A81A /* DDVerifyCustomView.m */,
+				C42F1D802477C9DA0088A81A /* DDVerifyCustomView.xib */,
 				C42F1D75247656BD0088A81A /* RNDdverify.h */,
 				C42F1D74247656BD0088A81A /* RNDdverify.m */,
 				C42F1D6F247656960088A81A /* UMModelCreate.h */,
@@ -123,8 +126,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C42F1D79247656F10088A81A /* DDVerifyViewController.m in Sources */,
+				C42F1D822477DA300088A81A /* DDVerifyCustomView.xib in Sources */,
 				C42F1D76247656BD0088A81A /* RNDdverify.m in Sources */,
+				C42F1D812477C9DB0088A81A /* DDVerifyCustomView.m in Sources */,
 				C42F1D70247656970088A81A /* UMModelCreate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

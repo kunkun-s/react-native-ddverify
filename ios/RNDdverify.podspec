@@ -32,11 +32,11 @@ Pod::Spec.new do |s|
   # 加载文件
   s.source_files  = "Class/**/*.{h,m}"
   # 排除文件
-  # s.exclude_files = 
+  # s.exclude_files = "Class/**/*.{storyboard,xib}"
   
-  # 资源文件
+  # 资源文件 将资源文件打包成bundle
   # resource_bundles = {   'XBPodSDK' => ['XBPodSDK/Assets/**'] }
-  s.resource_bundles = { 'ATAuthSDK' => ['libs/UMVerify/*.png'] }
+  s.resource_bundles = { 'ATAuthSDK' => ['libs/UMVerify/ATAuthSDK.bundle/*', ], 'RNDDverify' => ['image/*', "Class/**/*.{xib}"] }
   
   # 公共头文件,这些头文件将暴露给用户的项目。如果不设置，所有source_files的头文件将被暴露
   # s.public_header_files = 
@@ -59,7 +59,7 @@ Pod::Spec.new do |s|
   
   # 私有库依赖的三方pod库
   s.dependency "React"
-  
+ 
   #  说明文档地址
   # s.documentation_url
 
