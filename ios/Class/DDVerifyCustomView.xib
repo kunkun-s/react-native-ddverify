@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16086"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="DDVerifyCustomView">
+            <rect key="frame" x="0.0" y="0.0" width="1143" height="787"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pX3-wu-egq">
+                    <rect key="frame" x="0.0" y="25" width="1143" height="762"/>
+                    <subviews>
+                        <button opaque="NO" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cBb-Gz-a0K">
+                            <rect key="frame" x="191" y="0.0" width="762" height="762"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="cBb-Gz-a0K" secondAttribute="height" id="uVd-NX-d5J"/>
+                            </constraints>
+                            <connections>
+                                <action selector="clickButton:" destination="iN0-l3-epB" eventType="touchUpInside" id="pLY-ra-Ffg"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="cBb-Gz-a0K" firstAttribute="centerY" secondItem="pX3-wu-egq" secondAttribute="centerY" id="Lqt-9k-0g2"/>
+                        <constraint firstItem="cBb-Gz-a0K" firstAttribute="height" secondItem="pX3-wu-egq" secondAttribute="height" id="dF9-uk-Sq5"/>
+                        <constraint firstItem="cBb-Gz-a0K" firstAttribute="centerX" secondItem="pX3-wu-egq" secondAttribute="centerX" id="g5O-8P-CUq"/>
+                    </constraints>
+                </view>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="使用第三方账号登录" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="ihF-8W-2mu">
+                    <rect key="frame" x="0.0" y="0.0" width="1143" height="15"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <constraints>
+                <constraint firstItem="pX3-wu-egq" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="HjI-My-wOi"/>
+                <constraint firstAttribute="trailing" secondItem="pX3-wu-egq" secondAttribute="trailing" id="TbE-yf-wHf"/>
+                <constraint firstItem="pX3-wu-egq" firstAttribute="top" secondItem="ihF-8W-2mu" secondAttribute="bottom" constant="10" id="Yn0-MP-BHu"/>
+                <constraint firstItem="ihF-8W-2mu" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="s0h-nQ-Pyg"/>
+                <constraint firstItem="ihF-8W-2mu" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="v2Z-OJ-hX8"/>
+                <constraint firstAttribute="trailing" secondItem="ihF-8W-2mu" secondAttribute="trailing" id="yAe-cC-E41"/>
+                <constraint firstAttribute="bottom" secondItem="pX3-wu-egq" secondAttribute="bottom" id="zdm-Ho-Lck"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="wxLoginBtn" destination="cBb-Gz-a0K" id="15L-p3-dbY"/>
+            </connections>
+            <point key="canvasLocation" x="1164.4927536231885" y="-385.37946428571428"/>
+        </view>
+    </objects>
+</document>
