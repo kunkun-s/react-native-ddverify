@@ -8,7 +8,7 @@
 //  return YES;
 //}
 
-//设置单利模式 结局错误：Bridge is not set. This is probably because you've explicitly synthesized the bridge in RNDdverify, even though it's inherited from RCTEventEmitter
+//设置单利模式 解决错误：Bridge is not set. This is probably because you've explicitly synthesized the bridge in RNDdverify, even though it's inherited from RCTEventEmitter
 +(id)allocWithZone:(NSZone *)zone {
   static RNDdverify *sharedInstance = nil;
   static dispatch_once_t onceToken;

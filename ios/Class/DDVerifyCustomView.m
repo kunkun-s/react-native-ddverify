@@ -45,7 +45,7 @@
     DDVerifyCustomView * customView = [[currentBundle loadNibNamed:@"DDVerifyCustomView" owner:self options:nil] firstObject];
    
  
-    customView.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width - 10, 70);
+    customView.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width - 10, 80);
     customView.clickBlock = clickBlock;
     return customView;
 }
