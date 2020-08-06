@@ -252,22 +252,24 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
     //添加自定义按钮
     umVerifyHelper.removeAuthRegisterXmlConfig();
     umVerifyHelper.removeAuthRegisterViewConfig();
+    if (params.hasKey("showCustomView") && params.getString("showCustomView").equals("1")) {
+      umVerifyHelper.addAuthRegisterXmlConfig(new UMAuthRegisterXmlConfig.Builder().setLayout(R.layout.buttoms, new UMAbstractPnsViewDelegate() {
+        @Override
+        public void onViewCreated(View view) {
 
-    umVerifyHelper.addAuthRegisterXmlConfig(new UMAuthRegisterXmlConfig.Builder().setLayout(R.layout.buttoms, new UMAbstractPnsViewDelegate() {
-      @Override
-      public void onViewCreated(View view) {
+          findViewById(R.id.wexin_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              //微信登录
+              WritableMap dic = Arguments.createMap();
+              dic.putString("resultCode","DD1");
+              sendEvent(reactContext, "RN_DDVERIFY_EVENT", dic);
+            }
+          });
+        }
+      }).build());
+    }
 
-        findViewById(R.id.wexin_btn).setOnClickListener(new View.OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            //微信登录
-            WritableMap dic = Arguments.createMap();
-            dic.putString("resultCode","DD1");
-            sendEvent(reactContext, "RN_DDVERIFY_EVENT", dic);
-          }
-        });
-      }
-    }).build());
     umVerifyHelper.setAuthUIConfig(new UMAuthUIConfig.Builder()
             .setNavText("")
             .setNavColor(Color.WHITE)

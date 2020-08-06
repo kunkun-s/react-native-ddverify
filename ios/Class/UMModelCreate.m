@@ -168,11 +168,13 @@ static CGFloat ratio ;
     //model.privacyFrameBlock =
     
     //添加自定义控件并对自定义控件进行布局
-  
-    UIView * customView = [DDVerifyCustomView createView:clickBlock];
-    model.customViewBlock = ^(UIView * _Nonnull superCustomView) {
-         [superCustomView addSubview:customView];
-    };
+    if (params[@"showCustomView"] && [params[@"showCustomView"] isEqualToString:@"1"]) {
+        UIView * customView = [DDVerifyCustomView createView:clickBlock];
+        model.customViewBlock = ^(UIView * _Nonnull superCustomView) {
+             [superCustomView addSubview:customView];
+        };
+    }
+    
     
     model.customViewLayoutBlock = ^(CGSize screenSize, CGRect contentViewFrame, CGRect navFrame, CGRect titleBarFrame, CGRect logoFrame, CGRect sloganFrame, CGRect numberFrame, CGRect loginFrame, CGRect changeBtnFrame, CGRect privacyFrame) {
         CGRect frame = customView.frame;
