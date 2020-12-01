@@ -173,16 +173,17 @@ static CGFloat ratio ;
         model.customViewBlock = ^(UIView * _Nonnull superCustomView) {
              [superCustomView addSubview:customView];
         };
+        model.customViewLayoutBlock = ^(CGSize screenSize, CGRect contentViewFrame, CGRect navFrame, CGRect titleBarFrame, CGRect logoFrame, CGRect sloganFrame, CGRect numberFrame, CGRect loginFrame, CGRect changeBtnFrame, CGRect privacyFrame) {
+            CGRect frame = customView.frame;
+            frame.origin.x = (contentViewFrame.size.width - frame.size.width) * 0.5;
+            frame.origin.y = CGRectGetMinY(privacyFrame) - frame.size.height - 20;
+            frame.size.width = contentViewFrame.size.width - frame.origin.x * 2;
+            customView.frame = frame;
+        };
     }
     
     
-    model.customViewLayoutBlock = ^(CGSize screenSize, CGRect contentViewFrame, CGRect navFrame, CGRect titleBarFrame, CGRect logoFrame, CGRect sloganFrame, CGRect numberFrame, CGRect loginFrame, CGRect changeBtnFrame, CGRect privacyFrame) {
-        CGRect frame = customView.frame;
-        frame.origin.x = (contentViewFrame.size.width - frame.size.width) * 0.5;
-        frame.origin.y = CGRectGetMinY(privacyFrame) - frame.size.height - 20;
-        frame.size.width = contentViewFrame.size.width - frame.origin.x * 2;
-        customView.frame = frame;
-    };
+    
     return model;
 }
 
