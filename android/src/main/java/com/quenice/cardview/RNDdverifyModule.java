@@ -81,7 +81,7 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setVerifySDKInfo(Promise promise){
+  public void setVerifySDKInfo(String info, Promise promise){
 
     if (mTokenListener == null){
       //回调监听
@@ -142,7 +142,7 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
       umVerifyHelper = UMVerifyHelper.getInstance(reactContext, mTokenListener);
 
       umVerifyHelper.setAuthListener(mTokenListener);
-      umVerifyHelper.setAuthSDKInfo("h4pe4qupsBLE3KCGnAO+Dp/caGwqU4jb796eJQPJpiXR1+aNdvhzzjWGqPWQDb23c9VZ9NATt9nygZpq6VZcjTJZlLlm+/Ul32Tv36V+HloCyb+XbjHxmUHzLpxnMVjNWrziBYGE76GGs/BZtE95ksVOKEM043zofOJINcFOci5BHxSMWeDtry4Oy0CTvhfRuOlLRtqp0VknSs2fJNzCJwnVYwpZL8cQH0ymHISEVX31fz/w7IKOPs8M0v/Ypo1EQNrUmSzYjGf5DTxQrN95fi2jxp52xLatBJpQvVZBELk=");
+      umVerifyHelper.setAuthSDKInfo(info);
       Boolean bol = umVerifyHelper.checkEnvAvailable();
     if(promise != null){
       WritableMap dic = Arguments.createMap();

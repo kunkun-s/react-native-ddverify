@@ -5,7 +5,7 @@
 
 @class UMCustomModel;
 @interface RNDdverify : RCTEventEmitter <RCTBridgeModule>
-+ (void)ddVerifySetVerifySDKInfo:(void (^_Nullable)( NSDictionary * _Nonnull Dic))complete;
++ (void)ddVerifySetVerifySDKInfo:(NSString *)info complete:(void (^_Nullable)( NSDictionary * _Nonnull Dic))complete;
 + (UMCustomModel * _Nonnull)buildCustomModel:(BOOL)isAlert params:(NSDictionary *_Nonnull)params clickBlock:(void (^_Nullable)(NSDictionary * _Nonnull dic))clickBlock;
 @end
   

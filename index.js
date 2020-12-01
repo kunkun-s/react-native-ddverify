@@ -5,9 +5,9 @@ import { IS_TAB_STYLE } from '../../app/config';
 const { RNDdverify, } = NativeModules;
 export default RNDdverify
 //设置密钥
-export const setVerifySDKInfo = () => {
+export const setVerifySDKInfo = (info) => {
 
-    return RNDdverify.setVerifySDKInfo()
+    return RNDdverify.setVerifySDKInfo(info)
 }
 /**
  * 检查环境

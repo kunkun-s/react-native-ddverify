@@ -17,8 +17,8 @@
   });
   return sharedInstance;
 }
-+ (void)ddVerifySetVerifySDKInfo:(void (^_Nullable)( NSDictionary * _Nonnull Dic))complete{
-    NSString *info = @"2itUZoze3p8lAe1f2CxYWjFuButzB5NId7veWo3g0K2eQ7KP/lpp8ua//fdTMraYXv1ExrFBKh/xOnJpSk9Jv18mpRaaHyuUrefTWdLYTezqyGI2+eVKtd1VUlLX+X2oglQUQlx+hgS65J8aP2NeRV93ex4wIWzvY5XAxwcNrpnqrVpddU+vRmXOOhE0rEfNv8ka4Ht1fpuyd+j0zWLtQyc+1Edm7k3Tt1OwUqiFyBzcnWhBVe0eBg==";
++ (void)ddVerifySetVerifySDKInfo:(NSString *)info complete:(void (^_Nullable)( NSDictionary * _Nonnull Dic))complete{
+   
     [UMCommonHandler setVerifySDKInfo:info complete:^(NSDictionary * _Nonnull resultDic) {
         //是否调注册用成功
         complete(resultDic);
@@ -39,14 +39,13 @@
 }
 RCT_EXPORT_MODULE(RNDdverify);
 //设置SDK秘钥 RCTPromiseResolveBlock 必须和RCTPromiseRejectBlock配对使用
-RCT_REMAP_METHOD(setVerifySDKInfo, setVerifySDKInfoResolve:(RCTPromiseResolveBlock)Resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(setVerifySDKInfo, setVerifySDKInfo:(NSString *)info resolve:(RCTPromiseResolveBlock)Resolve rejecter:(RCTPromiseRejectBlock)reject){
     __block RCTPromiseResolveBlock blockResolve = Resolve;
-    [RNDdverify ddVerifySetVerifySDKInfo:^(NSDictionary * _Nonnull Dic) {
+    [RNDdverify ddVerifySetVerifySDKInfo:info complete:^(NSDictionary * _Nonnull Dic) {
         if (blockResolve != nil) {
             blockResolve(Dic);
             blockResolve = nil;
         }
-        
     }];
 }
 //检查认证环境
