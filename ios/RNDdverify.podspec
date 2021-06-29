@@ -50,8 +50,8 @@ Pod::Spec.new do |s|
   # 使用系统framework
    s.framework = "CoreTelephony","SystemConfiguration"
   # 使用第三方framework
-  s.vendored_frameworks = 'libs/UMVerify/UMVerify.framework'
-  # 使用系统.a 去除了lib和.tbd
+  s.vendored_frameworks = 'libs/UMVerify/UMVerify.framework','libs/UMVerify/YTXMonitor.framework',"libs/UMVerify/YTXOperators.framework"
+  # 使用系统.a 去除了前缀lib和后缀.tbd
    s.libraries = 'z'
   # 使用三方静态库 .a
   # s.vendored_libraries =
@@ -59,6 +59,7 @@ Pod::Spec.new do |s|
   
   # 私有库依赖的三方pod库
   s.dependency "React"
+#  s.dependency "UMVerify"
  
   #  说明文档地址
   # s.documentation_url

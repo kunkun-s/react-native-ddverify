@@ -1,7 +1,7 @@
 {
   "name": "react-native-ddverify",
-  "version": "1.0.9",
-  "description": "",
+  "version": "2.0.1",
+  "description": "ios -> UMVerify:3.3.1(2.3.0)、UMCommon:7.3.0、android -> UMCommon:9.4.0、UMVerify:3.2.1(2.5.1)",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

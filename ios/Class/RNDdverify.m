@@ -42,6 +42,7 @@ RCT_EXPORT_MODULE(RNDdverify);
 RCT_REMAP_METHOD(setVerifySDKInfo, setVerifySDKInfo:(NSString *)info resolve:(RCTPromiseResolveBlock)Resolve rejecter:(RCTPromiseRejectBlock)reject){
     __block RCTPromiseResolveBlock blockResolve = Resolve;
     [RNDdverify ddVerifySetVerifySDKInfo:info complete:^(NSDictionary * _Nonnull Dic) {
+        
         if (blockResolve != nil) {
             blockResolve(Dic);
             blockResolve = nil;

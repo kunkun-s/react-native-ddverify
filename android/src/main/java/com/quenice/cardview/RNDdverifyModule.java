@@ -10,8 +10,6 @@ import android.view.Surface;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-
-import com.alibaba.fastjson.JSON;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -42,6 +40,7 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
   private Promise myPromise = null;
   private int mScreenWidthDp;
   private int mScreenHeightDp;
+  private Boolean isLogin = false;
 
   private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params){
     reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
@@ -81,8 +80,8 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void setVerifySDKInfo(String info, Promise promise){
-
+  public void setVerifySDKInfo(String info, final Promise promise){
+    final Boolean[] b = {false};
     if (mTokenListener == null){
       //回调监听
       mTokenListener = new UMTokenResultListener() {
@@ -91,23 +90,37 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
           reactContext.runOnUiQueueThread(new Runnable() {
             @Override
             public void run() {
+
               umVerifyHelper.hideLoginLoading();
               WritableMap dic = Arguments.createMap();
               dic.putString("resultCode", "600010");
               dic.putString("msg", "解析错误");
+              UMTokenRet tokenRet = null;
               try {
-                UMTokenRet tokenRet = JSON.parseObject(ret, UMTokenRet.class);
-                if (tokenRet != null ) {
-                  dic.putString("resultCode", tokenRet.getCode());
-                  dic.putString("token", tokenRet.getToken());
-                  dic.putString("msg", tokenRet.getMsg());
-                }
-
+                tokenRet = UMTokenRet.fromJson(ret);
               } catch (Exception e) {
 
               }
+              if (tokenRet != null ) {
+                dic.putString("resultCode", tokenRet.getCode());
+                dic.putString("token", tokenRet.getToken());
+                dic.putString("msg", tokenRet.getMsg());
+                if (("600024").equals(tokenRet.getCode())) {
+                  //终端环境可以使用
+                  isLogin = true;
+                }
+              }
+              //通过监听通知React当前时间结果
 
-              sendEvent(reactContext, "RN_DDVERIFY_EVENT", dic);
+              if (b[0] == false){
+                b[0] = true;
+                //首次
+                promise.resolve(dic);
+              } else  {
+                sendEvent(reactContext, "RN_DDVERIFY_EVENT", dic);
+
+              }
+
 
             }
           });
@@ -122,18 +135,31 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
               WritableMap dic = Arguments.createMap();
               dic.putString("resultCode", "600010");
               dic.putString("msg", "解析错误");
+              UMTokenRet tokenRet = null;
               try {
-                UMTokenRet tokenRet = JSON.parseObject(ret, UMTokenRet.class);
-                if (tokenRet != null) {
-                  dic.putString("resultCode", tokenRet.getCode());
-                  dic.putString("msg", tokenRet.getMsg());
-                }
-
+                tokenRet = UMTokenRet.fromJson(ret);
               } catch (Exception e) {
 
               }
 
-              sendEvent(reactContext, "RN_DDVERIFY_EVENT", dic);
+              if (tokenRet != null) {
+                dic.putString("resultCode", tokenRet.getCode());
+                dic.putString("msg", tokenRet.getMsg());
+
+              }
+
+              if (b[0] == false){
+                b[0] = true;
+                //首次
+                promise.resolve(dic);
+              } else {
+                sendEvent(reactContext, "RN_DDVERIFY_EVENT", dic);
+              }
+              if( (("600013").equals(dic.getString("resultCode")) || ("600017").equals(dic.getString("resultCode"))) ){
+                //注册时回调当前环境是否可用且当前，检测完成后再发起预取号操作
+                isLogin = false;
+              }
+
             }
           });
         }
@@ -143,49 +169,32 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
 
       umVerifyHelper.setAuthListener(mTokenListener);
       umVerifyHelper.setAuthSDKInfo(info);
-      Boolean bol = umVerifyHelper.checkEnvAvailable();
-    if(promise != null){
-      WritableMap dic = Arguments.createMap();
-      dic.putString("resultCode", bol ? "600000" : "600017");
-      dic.putString("msg", bol ? "解析密钥成功" : "解析密钥失败");
-      promise.resolve(dic);
-
-    }
+      umVerifyHelper.checkEnvAvailable( UMVerifyHelper.SERVICE_TYPE_LOGIN);
 
   }
   /* 检测环境 */
   @ReactMethod
   public void checkEnvAvailableWithAuthType(String authType, Promise promise){
+    WritableMap decs = Arguments.createMap();
+    decs.putString("resultCode", isLogin ? "600000" : "600017");
+    decs.putString("msg",isLogin ? "解析密钥成功" : "解析密钥失败");
+    promise.resolve(decs);
     if (umVerifyHelper != null){
-
       Boolean checkBool = false;
       WritableMap dic = Arguments.createMap();
       if (authType.equals(new String("UMPNSAuthTypeLoginToken")) ){
         //检测一键登录
-        checkBool = umVerifyHelper.checkEnvAvailable();
 
+        umVerifyHelper.checkEnvAvailable(UMVerifyHelper.SERVICE_TYPE_LOGIN);
       }else if (authType.equals(new String("UMPNSAuthTypeVerifyToken")) ){
         //检测手机号是否是本机号码
 
-      }
-      if (checkBool){
-        //当前环境可以使用
-        dic.putString("resultCode","600000");
-        dic.putString("msg", "当前环境可以使用");
-      }else {
-        //当前环境不可以使用
-        dic.putString("resultCode","600025");
-        dic.putString("msg", "终端环境检查失败(终端不支持认证/终端检测参数错误)");
-      }
-      if(promise != null){
-        promise.resolve(dic);
-        promise = null;
       }
 
     }
   }
 
-  /* 预取号 */
+  /* 预取号，需要在注册完成 && 环境可用的情况下才能成功 */
   @ReactMethod
   public void accelerateLoginPageWithTimeout( Callback callback){
     myCallBack = callback;
@@ -221,7 +230,10 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
   /* 一键登录 */
   @ReactMethod
   public void getLoginTokenWithTimeout(String timeout, ReadableMap params){
-
+    if (!isLogin) {
+      //当前的环境不可用
+      return;
+    }
     String onePrivacy = "";
     String oneUrl = "";
     String twoPrivacy = "";

@@ -26,7 +26,7 @@ typedef NS_ENUM(NSInteger, UMPNSAuthType) {
 /**
  *  初始化SDK调用参数，app生命周期内调用一次
  *  @param  info app对应的秘钥
- *  @param  complete 结果同步回调，成功时resultDic=@{resultCode:600000, msg:...}，其他情况时"resultCode"值请参考PNSReturnCode
+ *  @param  complete 结果异步回调到主线程，成功时resultDic=@{resultCode:600000, msg:...}，其他情况时"resultCode"值请参考PNSReturnCode
  */
 + (void)setVerifySDKInfo:(NSString * _Nonnull)info complete:(void(^_Nullable)(NSDictionary * _Nonnull resultDic))complete;
 
@@ -34,21 +34,28 @@ typedef NS_ENUM(NSInteger, UMPNSAuthType) {
 /**
  *  检查当前环境是否支持一键登录或号码认证，resultDic 返回 PNSCodeSuccess 说明当前环境支持
  *  @param  authType 服务类型 UMPNSAuthTypeVerifyToken 本机号码校验流程，UMPNSAuthTypeLoginToken 一键登录流程
- *  @param  complete 同步结果回调，成功时resultDic=@{resultCode:600000, msg:...}，其他情况时"resultCode"值请参考PNSReturnCode，只有成功回调才能保障后续接口调用
+ *  @param  complete 结果异步回调到主线程，成功时resultDic=@{resultCode:600000, msg:...}，其他情况时"resultCode"值请参考PNSReturnCode，只有成功回调才能保障后续接口调用
  */
 + (void)checkEnvAvailableWithAuthType:(UMPNSAuthType)authType complete:(void (^_Nullable)(NSDictionary * _Nullable resultDic))complete;
 
 /**
+ *  加速获取本机号码校验token，防止调用 getVerifyTokenWithTimeout:complete: 获取token时间过长
+ *  @param  timeout 接口超时时间，单位s，默认为3.0s
+ *  @param  complete 结果异步回调到主线程，成功时resultDic=@{resultCode:600000, token:..., msg:...}，其他情况时"resultCode"值请参考UMPNSReturnCode
+ */
++ (void)accelerateVerifyWithTimeout:(NSTimeInterval)timeout complete:(void (^_Nullable)(NSDictionary * _Nonnull resultDic))complete;
+
+/**
  *  获取本机号码校验Token
  *  @param  timeout 接口超时时间，单位s，默认为3.0s
- *  @param  complete 结果异步回调，成功时resultDic=@{resultCode:600000, token:..., msg:...}，其他情况时"resultCode"值请参考PNSReturnCode
+ *  @param  complete 结果异步回调，成功时resultDic=@{resultCode:600000, token:..., msg:...}，其他情况时"resultCode"值请参考UMPNSReturnCode
  */
 + (void)getVerifyTokenWithTimeout:(NSTimeInterval)timeout complete:(void (^_Nullable)(NSDictionary * _Nonnull resultDic))complete;
 
 /**
  *  加速一键登录授权页弹起，防止调用 getLoginTokenWithTimeout:controller:model:complete: 等待弹起授权页时间过长
  *  @param  timeout 接口超时时间，单位s，默认为3.0s
- *  @param  complete 结果异步回调，成功时resultDic=@{resultCode:600000, msg:...}，其他情况时"resultCode"值请参考PNSReturnCode
+ *  @param  complete 结果异步回调，成功时resultDic=@{resultCode:600000, msg:...}，其他情况时"resultCode"值请参考UMPNSReturnCode
  */
 + (void)accelerateLoginPageWithTimeout:(NSTimeInterval)timeout complete:(void (^_Nullable)(NSDictionary * _Nonnull resultDic))complete;
 
@@ -66,6 +73,16 @@ typedef NS_ENUM(NSInteger, UMPNSAuthType) {
  *          600015（获取Token超时）、600013（运营商维护升级，该功能不可用）、600014（运营商维护升级，该功能已达最大调用次数）.....
  */
 + (void)getLoginTokenWithTimeout:(NSTimeInterval)timeout controller:(UIViewController *_Nonnull)controller model:(UMCustomModel *_Nullable)model complete:(void (^_Nullable)(NSDictionary * _Nonnull resultDic))complete;
+
+
+/**
+ *  此接口仅用于开发期间用于一键登录页面不同机型尺寸适配调试（可支持模拟器），非正式页面，手机掩码为0，不能正常登录，请开发者注意下
+ *  @param  controller 唤起自定义授权页的容器，内部会对其进行验证，检查是否符合条件
+ *  @param  model 自定义授权页面选项，可为nil，采用默认的授权页面，具体请参考UMCustomModel.h文件
+ *  @param  complete 结果异步回调到主线程，"resultDic"里面的"resultCode"值请参考PNSReturnCode
+ */
++ (void)debugLoginUIWithController:(UIViewController *_Nonnull)controller model:(UMCustomModel *_Nullable)model complete:(void (^_Nullable)(NSDictionary * _Nonnull resultDic))complete;
+
 
 /**
  *  手动隐藏一键登录获取登录Token之后的等待动画，默认为自动隐藏，当设置 UMCustomModel 实例 autoHideLoginLoading = NO 时, 可调用该方法手动隐藏
@@ -91,5 +108,4 @@ typedef NS_ENUM(NSInteger, UMPNSAuthType) {
  *  @param  complete 异步结果回调到主线程，成功时resultDic=@{resultCode:600000, msg:...}，其他情况时"resultCode"值请参考PNSReturnCode，只有成功回调才能保障后续接口调用
  */
 + (void)checkEnvAvailableWithComplete:(void (^_Nullable)(NSDictionary * _Nullable resultDic))complete DEPRECATED_MSG_ATTRIBUTE("Please use checkEnvAvailableWithAuthType:complete: instead");
-
 @end
