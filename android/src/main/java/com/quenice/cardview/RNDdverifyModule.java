@@ -1,6 +1,7 @@
 
 package com.quenice.cardview;
 
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Build;
@@ -23,6 +24,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import javax.annotation.Nullable;
 
 import com.umeng.umverify.UMVerifyHelper;
+import com.umeng.umverify.listener.UMAuthUIControlClickListener;
 import com.umeng.umverify.listener.UMPreLoginResultListener;
 import com.umeng.umverify.listener.UMTokenResultListener;
 import com.umeng.umverify.model.UMTokenRet;
@@ -90,7 +92,6 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
           reactContext.runOnUiQueueThread(new Runnable() {
             @Override
             public void run() {
-
               umVerifyHelper.hideLoginLoading();
               WritableMap dic = Arguments.createMap();
               dic.putString("resultCode", "600010");
@@ -114,10 +115,15 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
 
               if (b[0] == false){
                 b[0] = true;
-                //首次
-                promise.resolve(dic);
+                try {
+                  //首次
+                  promise.resolve(dic);
+                } catch (Exception e) {
+                  
+                }
+                
               } else  {
-                sendEvent(reactContext, "RN_DDVERIFY_EVENT", dic);
+                sendEvent(getReactApplicationContext(), "RN_DDVERIFY_EVENT", dic);
 
               }
 
@@ -131,6 +137,7 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
           reactContext.runOnUiQueueThread(new Runnable() {
             @Override
             public void run() {
+
               umVerifyHelper.hideLoginLoading();
               WritableMap dic = Arguments.createMap();
               dic.putString("resultCode", "600010");
@@ -150,10 +157,14 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
 
               if (b[0] == false){
                 b[0] = true;
-                //首次
-                promise.resolve(dic);
+                try {
+                  //首次
+                  promise.resolve(dic);
+                } catch (Exception e) {
+
+                }
               } else {
-                sendEvent(reactContext, "RN_DDVERIFY_EVENT", dic);
+                sendEvent(getReactApplicationContext(), "RN_DDVERIFY_EVENT", dic);
               }
               if( (("600013").equals(dic.getString("resultCode")) || ("600017").equals(dic.getString("resultCode"))) ){
                 //注册时回调当前环境是否可用且当前，检测完成后再发起预取号操作
@@ -165,12 +176,20 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
         }
       };
     }
-      umVerifyHelper = UMVerifyHelper.getInstance(reactContext, mTokenListener);
+    umVerifyHelper = UMVerifyHelper.getInstance(reactContext, mTokenListener);
 
-      umVerifyHelper.setAuthListener(mTokenListener);
-      umVerifyHelper.setAuthSDKInfo(info);
-      umVerifyHelper.checkEnvAvailable( UMVerifyHelper.SERVICE_TYPE_LOGIN);
-
+    umVerifyHelper.setAuthListener(mTokenListener);
+    umVerifyHelper.setAuthSDKInfo(info);
+    umVerifyHelper.checkEnvAvailable( UMVerifyHelper.SERVICE_TYPE_LOGIN);
+//    /**
+//     * 控件点击事件回调
+//     */
+//    umVerifyHelper.setUIClickListener(new UMAuthUIControlClickListener() {
+//      @Override
+//      public void onClick(String code, Context context, String jsonObj) {
+//        Log.e("authSDK", "dddd_xxxx:code=" + code + ", jsonObj=" + jsonObj);
+//      }
+//    });
   }
   /* 检测环境 */
   @ReactMethod
@@ -275,7 +294,7 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
               //微信登录
               WritableMap dic = Arguments.createMap();
               dic.putString("resultCode","DD1");
-              sendEvent(reactContext, "RN_DDVERIFY_EVENT", dic);
+              sendEvent(getReactApplicationContext(), "RN_DDVERIFY_EVENT", dic);
             }
           });
         }

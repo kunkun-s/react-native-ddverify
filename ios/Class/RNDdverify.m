@@ -112,7 +112,8 @@ RCT_REMAP_METHOD(getLoginTokenWithTimeout, getLoginTokenWithTimeout:(NSString *)
             [self sendEventWithName:@"RN_DDVERIFY_EVENT" body:dic];
         }];
         
-           newModel.supportedInterfaceOrientations = UIInterfaceOrientationMaskPortrait;
+        newModel.supportedInterfaceOrientations = UIInterfaceOrientationMaskPortrait;
+        newModel.presentDirection = UMPNSPresentationDirectionBottom;
         [UMCommonHandler getLoginTokenWithTimeout: 3 controller:[UIApplication sharedApplication].keyWindow.rootViewController model:newModel complete:^(NSDictionary * _Nonnull resultDic) {
             //此处会多次调用
             [self sendEventWithName:@"RN_DDVERIFY_EVENT" body:resultDic];
