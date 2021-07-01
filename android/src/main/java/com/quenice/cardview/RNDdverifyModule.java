@@ -100,7 +100,7 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
               try {
                 tokenRet = UMTokenRet.fromJson(ret);
               } catch (Exception e) {
-
+                tokenRet = null;
               }
               if (tokenRet != null ) {
                 dic.putString("resultCode", tokenRet.getCode());
@@ -145,14 +145,18 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
               UMTokenRet tokenRet = null;
               try {
                 tokenRet = UMTokenRet.fromJson(ret);
-              } catch (Exception e) {
 
+              } catch (Exception e) {
+                tokenRet = null;
               }
 
               if (tokenRet != null) {
                 dic.putString("resultCode", tokenRet.getCode());
                 dic.putString("msg", tokenRet.getMsg());
-
+                if( (("600013").equals(tokenRet.getCode()) || ("600017").equals(tokenRet.getCode())) ){
+                  //注册时回调当前环境是否可用且当前，检测完成后再发起预取号操作
+                  isLogin = false;
+                }
               }
 
               if (b[0] == false){
@@ -166,11 +170,6 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
               } else {
                 sendEvent(getReactApplicationContext(), "RN_DDVERIFY_EVENT", dic);
               }
-              if( (("600013").equals(dic.getString("resultCode")) || ("600017").equals(dic.getString("resultCode"))) ){
-                //注册时回调当前环境是否可用且当前，检测完成后再发起预取号操作
-                isLogin = false;
-              }
-
             }
           });
         }
