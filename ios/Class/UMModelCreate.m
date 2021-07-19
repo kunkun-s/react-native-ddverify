@@ -106,14 +106,16 @@ static CGFloat ratio ;
 
         }
     }
+    
     model.privacyColors = @[UIColor.lightGrayColor, UIColor.orangeColor];
     model.privacyAlignment = NSTextAlignmentCenter;
     model.privacyFont = [UIFont fontWithName:@"PingFangSC-Regular" size:13.0];
     model.privacyOperatorPreText = @"《";
     model.privacyOperatorSufText = @"》";
-    model.checkBoxIsHidden = YES;
-    model.checkBoxIsChecked = YES;
-    model.checkBoxWH = 17.0;
+    model.checkBoxIsHidden = NO;
+    model.checkBoxIsChecked = NO;
+    model.checkBoxImages = @[[UIImage imageWithContentsOfFile:[currentBundle pathForResource:@"unchecked.png" ofType:nil inDirectory:@"RNDDverify.bundle"]],[UIImage imageWithContentsOfFile:[currentBundle pathForResource:@"checked.png" ofType:nil inDirectory:@"RNDDverify.bundle"]]];
+    model.checkBoxWH = 20.0;
     //切换到其他方式
     NSString * changeBtnTitle = params && params[@"changeBtnTitle"] ? params[@"changeBtnTitle"] : @"";
     model.changeBtnTitle = [[NSAttributedString alloc] initWithString:changeBtnTitle attributes:@{NSForegroundColorAttributeName : UIColor.grayColor,NSFontAttributeName : [UIFont systemFontOfSize:16.0]}];

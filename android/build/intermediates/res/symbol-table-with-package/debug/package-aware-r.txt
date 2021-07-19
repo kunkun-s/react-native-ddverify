@@ -641,6 +641,7 @@ drawable authsdk_dialog_shape_corner
 drawable authsdk_load_dot_white
 drawable authsdk_return_bg
 drawable authsdk_waiting_icon
+drawable checked
 drawable diandao
 drawable icon_close
 drawable login_btn_select
@@ -659,6 +660,7 @@ drawable notify_panel_notification_icon_bg
 drawable redbox_top_border_background
 drawable tooltip_frame_dark
 drawable tooltip_frame_light
+drawable unchecked
 drawable wechar_icon
 id accessibility_actions
 id accessibility_hint

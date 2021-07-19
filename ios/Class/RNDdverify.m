@@ -115,6 +115,13 @@ RCT_REMAP_METHOD(getLoginTokenWithTimeout, getLoginTokenWithTimeout:(NSString *)
         newModel.supportedInterfaceOrientations = UIInterfaceOrientationMaskPortrait;
         newModel.presentDirection = UMPNSPresentationDirectionBottom;
         [UMCommonHandler getLoginTokenWithTimeout: 3 controller:[UIApplication sharedApplication].keyWindow.rootViewController model:newModel complete:^(NSDictionary * _Nonnull resultDic) {
+            if ( [@"700002" isEqual:[resultDic objectForKey:@"resultCode"]]  && ![[resultDic objectForKey:@"isChecked"] intValue]) {
+                //没有勾选用户协议
+                UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"请勾选协议" message:@"阅读并勾选底部用户协议。" delegate:NULL cancelButtonTitle:@"确定" otherButtonTitles: nil];
+               
+                // 显示
+                [alert show];
+            }
             //此处会多次调用
             [self sendEventWithName:@"RN_DDVERIFY_EVENT" body:resultDic];
         }];
