@@ -6,16 +6,30 @@
 `$ npm install react-native-ddverify` or `$ yarn add react-native-ddverify`
 
 
-### Manual installation
+### iOS
+如果项目没有UMCommon，则需要在你的工程目录下添加UMCommon依赖<br>
+1. 在主项目的podfile中添加
+```Ruby
+pod 'UMCommon'    	#必须集成
+pod 'UMDevice'    	#必须集成
+pod 'UMCCommonLog'	#可选，日志插件
+pod 'UMAPM' 		#必选，APM组件，原错误分析升级为独立产品U-APM
 
+```
+2. 或者去um官方sdk手动下载Verify的SDK<br>
+手动将除了verify 文件夹之外的，其他sdk文件(common、thirdparties、umcommonlog)都依赖到你的主项目。
+`注：thirdparties中的UTDID.framework 可能会与Alipay冲突，如果冲突，请删除um的thirdparties`
 
-#### iOS
+#### 添加完依赖后执行
 `pod install`
 
+#### 更换图片资源
+ios/image 目录下是使用的一键登录logo、按钮、等图片资源，仅需更换图片，并保留原图片名称即可。
 
+### Android
 
-#### Android
-
+#### 更换图片资源
+drawable 文件中中的图片更换，并保留图片名称即可。
 
 ### 基本流程
 1. 先设置密钥
