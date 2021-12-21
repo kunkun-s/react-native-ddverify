@@ -4,13 +4,20 @@ import { IS_TAB_STYLE } from '../../app/config';
 
 const { RNDdverify, } = NativeModules;
 export default RNDdverify
-//设置密钥
+
+/**
+ * 设置密钥
+ * @param {*} info 
+ * @returns 
+ */
 export const setVerifySDKInfo = (info) => {
 
     return RNDdverify.setVerifySDKInfo(info)
 }
 /**
- * 检查环境
+ * 检查环境 
+ * UMPNSAuthTypeLoginToken 一键登录环境
+ * UMPNSAuthTypeVerifyToken 本机号码校验环境
  * @param {UMPNSAuthTypeLoginToken UMPNSAuthTypeVerifyToken} authType 
  *  
  */
@@ -24,6 +31,11 @@ export const checkEnvAvailableWithAuthType = (authType) => {
 export const getVersion = (complete) => {
     IS_TAB_STYLE && RNDdverify.getVersion(complete)
 }
+/**
+ * 预取号，可以缩减一键登录初始化时间，不可以多次调用预取号（最好是打开APP后，验证用户登录信息，再决定是否调用一次预取号）
+ * @param {*} BackHandler 
+ * @returns 
+ */
 export const accelerateLoginPageWithTimeout = (BackHandler)=>{
     return RNDdverify.accelerateLoginPageWithTimeout(BackHandler);
 }
@@ -37,9 +49,25 @@ export const accelerateLoginPageWithTimeout = (BackHandler)=>{
 export const getLoginTokenWithTimeout = ( timeOut, params ) => {
     return RNDdverify.getLoginTokenWithTimeout( timeOut, params )
 }
+/**
+ * 获取VerifyToken
+ * 使用这个VerifyToken + 手机号码。去后端进行校验。
+ * 返回一个 Promise
+ * 
+ */
+export const getVerifyToken = () => {
+
+    return new Promise((resolve, reject)=>{
+        RNDdverify.getVerifyToken().then((token)=>{
+            resolve(token)
+        }).catch((e)=>{
+            reject(-1)
+        })
+    })
+}
 //关闭授权页面
 export const cancelLoginVCAnimated = () => {
-    RNDdverify.cancelLoginVCAnimated()
+     RNDdverify.cancelLoginVCAnimated()
 }
 //判断设备蜂窝网络是否开启
 export const checkDeviceCellularDataEnable = (complete) => {

@@ -111,10 +111,13 @@ RCT_REMAP_METHOD(getLoginTokenWithTimeout, getLoginTokenWithTimeout:(NSString *)
             //这里是自定义按钮的回调
             [self sendEventWithName:@"RN_DDVERIFY_EVENT" body:dic];
         }];
-        
+        int n_timeout = 3;
+        if (timeout) {
+            n_timeout = [timeout intValue];
+        }
         newModel.supportedInterfaceOrientations = UIInterfaceOrientationMaskPortrait;
         newModel.presentDirection = UMPNSPresentationDirectionBottom;
-        [UMCommonHandler getLoginTokenWithTimeout: 3 controller:[UIApplication sharedApplication].keyWindow.rootViewController model:newModel complete:^(NSDictionary * _Nonnull resultDic) {
+        [UMCommonHandler getLoginTokenWithTimeout: n_timeout controller:[UIApplication sharedApplication].keyWindow.rootViewController model:newModel complete:^(NSDictionary * _Nonnull resultDic) {
             if ( [@"700002" isEqual:[resultDic objectForKey:@"resultCode"]]  && ![[resultDic objectForKey:@"isChecked"] intValue]) {
                 //没有勾选用户协议
                 UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"请勾选协议" message:@"阅读并勾选底部用户协议。" delegate:NULL cancelButtonTitle:@"确定" otherButtonTitles: nil];
@@ -127,6 +130,19 @@ RCT_REMAP_METHOD(getLoginTokenWithTimeout, getLoginTokenWithTimeout:(NSString *)
         }];
     });
 
+}
+//本机号码校验
+RCT_REMAP_METHOD(getVerifyToken, getVerifyTokenWithTimeout:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+    [UMCommonHandler getVerifyTokenWithTimeout:3 complete:^(NSDictionary * _Nonnull resultDic) {
+        if ([PNSCodeSuccess isEqualToString:[resultDic objectForKey:@"resultCode"]] == NO) {
+            //获取VerifyToken 失败
+            reject(@"-1",@"获取VerifyToken失败", nil);
+        } else {
+            //2. 去服务器验证 VerifyToken
+            NSString *token = [resultDic objectForKey:@"token"];
+            resolve(token);
+        }
+    }];
 }
 
 //隐藏授权时关闭

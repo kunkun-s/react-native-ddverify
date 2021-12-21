@@ -245,6 +245,36 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
       }
     });
   }
+  /* 本机号码校验 */
+  @ReactMethod
+  public void getVerifyToken(final Promise promise){
+    umVerifyHelper.setAuthListener(new UMTokenResultListener() {
+      @Override
+      public void onTokenSuccess(String s) {
+        UMTokenRet tokenRet = null;
+        try {
+          tokenRet = UMTokenRet.fromJson(s);
+        } catch (Exception e) {
+          tokenRet = null;
+        }
+        if (tokenRet != null){
+          promise.resolve(tokenRet.getToken());
+        } else {
+          promise.reject("-1","获取VerifyToken失败");
+        }
+        umVerifyHelper.setAuthListener(mTokenListener);
+
+      }
+
+      @Override
+      public void onTokenFailed(String s) {
+        promise.reject("-1","获取VerifyToken失败");
+        umVerifyHelper.setAuthListener(mTokenListener);
+
+      }
+    });
+    umVerifyHelper.getVerifyToken(5000);
+  }
   /* 一键登录 */
   @ReactMethod
   public void getLoginTokenWithTimeout(String timeout, ReadableMap params){
