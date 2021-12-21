@@ -37,6 +37,9 @@ drawable 文件中中的图片更换，并保留图片名称即可。
 3. 可以根据用户登录状态，决定是否“预取号”，仅可以调用一次。（如果预取号调用过于频繁，且不符合逻辑，则会被UM限制）
 4. 发起“一键登录”or“本机号码校验”SDK
 ## Usage
+
+`使用verifySDK之前，需要向完成UMCommon基础组件注册。完成友盟的注册之后才能使用`
+
 ```javascript
 import RNDdverify from 'react-native-ddverify';
 ```
