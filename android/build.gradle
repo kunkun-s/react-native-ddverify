@@ -28,17 +28,19 @@ android {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo1.maven.org/maven2/' }
+
 }
 
 dependencies {
     implementation 'com.facebook.react:react-native:+'
     api fileTree(dir: 'libs', include: ['*.aar', '*.jar'], exclude: [])
-    api 'com.umeng.umsdk:common:9.4.4'  // 必选
-    api 'com.umeng.umsdk:asms:1.4.1'    // 必选
-    implementation  'com.umeng.umsdk:uverify:2.5.1'// 必选
-    implementation  'com.umeng.umsdk:uverify-main:2.0.3'// 必选
-    implementation  'com.umeng.umsdk:uverify-logger:2.0.3'// 必选
-    implementation  'com.umeng.umsdk:uverify-crashshield:2.0.3'// 必选
+    api 'com.umeng.umsdk:common:9.5.2'  // 必选
+    api 'com.umeng.umsdk:asms:1.6.3'    // 必选
+    implementation  'com.umeng.umsdk:uverify:2.5.7'// 必选
+    implementation  'com.umeng.umsdk:uverify-main:2.1.4'// 必选
+    implementation  'com.umeng.umsdk:uverify-logger:2.1.4'// 必选
+    implementation  'com.umeng.umsdk:uverify-crashshield:2.1.4'// 必选
     //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:27.1.1'
 }
