@@ -1,6 +1,7 @@
 
 package com.quenice.cardview;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
@@ -11,6 +12,8 @@ import android.view.Surface;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
+
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
@@ -23,6 +26,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import javax.annotation.Nullable;
 
+import com.nirvana.tools.jsoner.JSONUtils;
 import com.umeng.umverify.UMVerifyHelper;
 import com.umeng.umverify.listener.UMAuthUIControlClickListener;
 import com.umeng.umverify.listener.UMPreLoginResultListener;
@@ -32,10 +36,13 @@ import com.umeng.umverify.view.UMAbstractPnsViewDelegate;
 import com.umeng.umverify.view.UMAuthRegisterViewConfig;
 import com.umeng.umverify.view.UMAuthRegisterXmlConfig;
 import com.umeng.umverify.view.UMAuthUIConfig;
+
+import org.json.JSONObject;
+
 public class RNDdverifyModule extends ReactContextBaseJavaModule {
 
   private final ReactApplicationContext reactContext;
-
+  private Boolean privacyStatus = false;//同步一键登录组件的隐私政策是否勾选
   private UMTokenResultListener mTokenListener = null;
   private UMVerifyHelper umVerifyHelper = null;
   private Callback myCallBack = null;
@@ -180,15 +187,23 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
     umVerifyHelper.setAuthListener(mTokenListener);
     umVerifyHelper.setAuthSDKInfo(info);
     umVerifyHelper.checkEnvAvailable( UMVerifyHelper.SERVICE_TYPE_LOGIN);
-//    /**
-//     * 控件点击事件回调
-//     */
-//    umVerifyHelper.setUIClickListener(new UMAuthUIControlClickListener() {
-//      @Override
-//      public void onClick(String code, Context context, String jsonObj) {
-//        Log.e("authSDK", "dddd_xxxx:code=" + code + ", jsonObj=" + jsonObj);
-//      }
-//    });
+    /**
+     * 控件点击事件回调
+     */
+    umVerifyHelper.setUIClickListener(new UMAuthUIControlClickListener() {
+      @Override
+      public void onClick(String code, Context context, String jsonObj) {
+        if(code == "700003" || code == "700008"){//70003点击底部同意按钮，700008点击二次弹窗协议同意并继续
+          try {
+            JSONObject jobje  = new JSONObject(jsonObj);
+            privacyStatus = jobje.getBoolean("isChecked");
+          }catch (Exception e){
+            privacyStatus = !privacyStatus;
+          }
+        }
+        // Log.e("authSDK", "dddd_xxxx:code=" + code + ", jsonObj=" + jsonObj);
+      }
+    });
   }
   /* 检测环境 */
   @ReactMethod
@@ -282,6 +297,7 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
       //当前的环境不可用
       return;
     }
+    privacyStatus = false;
     String onePrivacy = "";
     String oneUrl = "";
     String twoPrivacy = "";
@@ -320,10 +336,25 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
           findViewById(R.id.wexin_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              //微信登录
-              WritableMap dic = Arguments.createMap();
-              dic.putString("resultCode","DD1");
-              sendEvent(getReactApplicationContext(), "RN_DDVERIFY_EVENT", dic);
+
+              try {
+                if (privacyStatus){
+                  //隐私政策勾选
+                  //微信登录
+                  WritableMap dic = Arguments.createMap();
+                  dic.putString("resultCode","DD1");
+                  sendEvent(getReactApplicationContext(), "RN_DDVERIFY_EVENT", dic);
+                } else {
+                  //隐私政策未勾选
+                  Toast toast = Toast.makeText(getReactApplicationContext(),"请阅读并勾选底部服务条款与协议。",Toast.LENGTH_LONG);
+                  toast.show();
+
+                }
+              }catch (Exception e){
+                // Log.e("authSDK",e.getMessage());
+              }
+
+
             }
           });
         }
