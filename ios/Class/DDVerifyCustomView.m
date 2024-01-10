@@ -22,10 +22,10 @@
 */
 - (IBAction)clickButton:(UIButton *)sender {
     
-    if (sender.tag == 1 &&  self.clickBlock) {
-        //微信
+    if (self.clickBlock) {
+        //微信:DD1、apple:DD2
         self.clickBlock(@{
-            @"resultCode": @"DD1",
+            @"resultCode": sender.tag == 1 ?@"DD1":(sender.tag == 2)?@"DD2":@"",
                         });
     }
 }
@@ -35,6 +35,10 @@
     [self.wxLoginBtn setBackgroundImage:[UIImage imageWithContentsOfFile:[currentBundle pathForResource:@"wechar_icon.png" ofType:nil inDirectory:@"RNDDverify.bundle"]] forState:UIControlStateNormal];
    [self.wxLoginBtn setBackgroundImage:[UIImage imageWithContentsOfFile:[currentBundle pathForResource:@"wechar_icon.png" ofType:nil inDirectory:@"RNDDverify.bundle"]] forState:UIControlStateHighlighted];
    [self.wxLoginBtn setBackgroundImage:[UIImage imageWithContentsOfFile:[currentBundle pathForResource:@"wechar_icon.png" ofType:nil inDirectory:@"RNDDverify.bundle"]] forState:UIControlStateSelected];
+    
+    [self.appleLoginBtn setBackgroundImage:[UIImage imageWithContentsOfFile:[currentBundle pathForResource:@"appleIcon.png" ofType:nil inDirectory:@"RNDDverify.bundle"]] forState:UIControlStateNormal];
+   [self.appleLoginBtn setBackgroundImage:[UIImage imageWithContentsOfFile:[currentBundle pathForResource:@"appleIcon.png" ofType:nil inDirectory:@"RNDDverify.bundle"]] forState:UIControlStateHighlighted];
+   [self.appleLoginBtn setBackgroundImage:[UIImage imageWithContentsOfFile:[currentBundle pathForResource:@"appleIcon.png" ofType:nil inDirectory:@"RNDDverify.bundle"]] forState:UIControlStateSelected];
 }
 +(UIView *)createView:(void (^_Nullable)(NSDictionary * _Nonnull dic))clickBlock{
     

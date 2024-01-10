@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface DDVerifyCustomView : UIView
+@property (weak, nonatomic) IBOutlet UIButton *appleLoginBtn;
 
 @property (weak, nonatomic) IBOutlet UIButton *wxLoginBtn;
 @property (nonatomic,copy) void(^clickBlock)(NSDictionary * _Nullable dic);
