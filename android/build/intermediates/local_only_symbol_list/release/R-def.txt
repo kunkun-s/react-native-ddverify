@@ -1,0 +1,14 @@
+R_DEF: Internal format may change without notice
+local
+anim in_activity
+anim out_activity
+drawable checked
+drawable diandao
+drawable icon_close
+drawable login_btn_select
+drawable unchecked
+drawable wechar_icon
+id myButtoms_layout
+id textView
+id wexin_btn
+layout buttoms
