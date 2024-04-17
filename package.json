@@ -1,6 +1,6 @@
 {
   "name": "react-native-ddverify",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "ios -> UMVerify:3.6.3(2.8.0)、UMCommon:7.4.6、android -> UMCommon:9.6.8、UMVerify:3.12.1(2.6.1)",
   "main": "index.js",
   "scripts": {
