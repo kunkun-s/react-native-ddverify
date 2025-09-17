@@ -36,8 +36,8 @@ Pod::Spec.new do |s|
   
   # 资源文件 将资源文件打包成bundle
   # resource_bundles = {   'XBPodSDK' => ['XBPodSDK/Assets/**'] }
-  s.resource_bundles = { 'ATAuthSDK' => ['ios/libs/UMVerify/ATAuthSDK.bundle/*', ], 'RNDDverify' => ['ios/image/*', "ios/Class/**/*.{xib}"] }
-  
+#  s.resource_bundles = { 'ATAuthSDK' => ['ios/libs/UMVerify/ATAuthSDK.bundle/*', ], 'RNDDverify' => ['ios/image/*', "ios/Class/**/*.{xib}"] }
+  s.resource_bundles = { 'RNDDverify' => ['ios/image/*', "ios/Class/**/*.{xib}"] }
   # 公共头文件,这些头文件将暴露给用户的项目。如果不设置，所有source_files的头文件将被暴露
   # s.public_header_files =
   
@@ -50,7 +50,7 @@ Pod::Spec.new do |s|
   # 使用系统framework
    s.framework = "CoreTelephony","SystemConfiguration"
   # 使用第三方framework
-  s.vendored_frameworks = 'ios/libs/UMVerify/UMVerify.framework','ios/libs/UMVerify/YTXMonitor.framework',"ios/libs/UMVerify/YTXOperators.framework"
+#  s.vendored_frameworks = 'ios/libs/UMVerify/UMVerify.framework','ios/libs/UMVerify/YTXMonitor.framework',"ios/libs/UMVerify/YTXOperators.framework"
   # 使用系统.a 去除了前缀lib和后缀.tbd
    s.libraries = 'z'
   # 使用三方静态库 .a
@@ -59,7 +59,7 @@ Pod::Spec.new do |s|
   
   # 私有库依赖的三方pod库
   s.dependency "React"
-#  s.dependency "UMVerify"
+  s.dependency "UMVerify","3.1.0"
  
   #  说明文档地址
   # s.documentation_url
