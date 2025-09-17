@@ -38,13 +38,11 @@ repositories {
 dependencies {
     implementation 'com.facebook.react:react-native:+'
     api fileTree(dir: 'libs', include: ['*.aar', '*.jar'], exclude: [])
-    api 'com.umeng.umsdk:common:9.8.5'  // 必选
+    api 'com.umeng.umsdk:common:9.8.8'  // 必选
     api 'com.umeng.umsdk:asms:1.8.7.2'    // 必选
-    implementation  'com.umeng.umsdk:uverify:2.6.1'// 必选 
-    implementation  'com.umeng.umsdk:uverify-main:2.2.3'// 必选 
-    implementation  'com.umeng.umsdk:uverify-logger:2.2.2'// 必选  
-    
-    implementation  'com.umeng.umsdk:uverify-crashshield:2.1.4'// 必选
+    implementation  'com.umeng.umsdk:uverify:4.0.0'// 必选
+    implementation  'com.umeng.umsdk:uverify-main:2.2.3'// 必选
+    implementation  'com.umeng.umsdk:uverify-logger:2.2.2'// 必选
     //noinspection GradleCompatible
     implementation 'com.android.support:appcompat-v7:27.1.1'
 }
