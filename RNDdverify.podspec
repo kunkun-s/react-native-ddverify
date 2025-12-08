@@ -23,7 +23,7 @@ Pod::Spec.new do |s|
   # s.swift_version
 
   #  pod支持的平台，如果没有设置意味着支持所有平台,使用deployment_target支持选择多个平台
-  s.platform     = :ios, "7.0"
+  s.platform     = :ios, "10.0"
 
   # 获取库的地址
     # git地址，tag:值以v开头，支持子模块
