@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/kunkun-s/react-native-ddverify.git", :tag => "master" }
   
   # 加载文件
-  s.source_files  = "ios/Class/**/*.{h,m}"
+  s.source_files  = "ios/Class/**/*.{h,m,mm}"
   # 排除文件
   # s.exclude_files = "Class/**/*.{storyboard,xib}"
   
@@ -69,7 +69,8 @@ Pod::Spec.new do |s|
 
   #  废弃的pod名称
   # s.deprecated_in_favor_of = 'NewMoreAwesomePod'
-
+  # RN新架构
+  install_modules_dependencies(s)
 end
 
   
