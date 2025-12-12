@@ -11,7 +11,7 @@
 
 #ifdef RCT_NEW_ARCH_ENABLED
 //新架构
-RCT_EXPORT_MODULE(NativeDDVerify)
+RCT_EXPORT_MODULE(RNDdverify)
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
     return std::make_shared<facebook::react::NativeDDVerifySpecJSI>(params);
 }

@@ -1,4 +1,4 @@
-package com.quenice.cardview;
+package com.dddverify;
 
 import android.content.Context;
 import android.util.DisplayMetrics;

@@ -1,11 +1,9 @@
 
 import { NativeModules } from 'react-native';
 
+import NativeDDVerify from "./specs/NativeDDVerify";
 
-const isTurboModuleEnabled = global?.__turboModuleProxy != null;
-const RNDdverify = isTurboModuleEnabled ?
-  require("./specs/NativeDDVerify").default :
-  NativeModules.RNDdverify;
+const RNDdverify = NativeDDVerify ||NativeModules.RNDdverify;
 
 export default RNDdverify;
 
