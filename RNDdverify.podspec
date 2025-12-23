@@ -60,7 +60,9 @@ Pod::Spec.new do |s|
   # 私有库依赖的三方pod库
   s.dependency "React"
   s.dependency "UMVerify","3.1.0"
- 
+  s.dependency "UMCommon"
+  s.dependency "UMDevice"
+
   #  说明文档地址
   # s.documentation_url
 

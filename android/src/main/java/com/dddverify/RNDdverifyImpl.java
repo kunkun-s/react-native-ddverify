@@ -17,7 +17,6 @@ import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.quenice.cardview.AppUtils;
 import com.umeng.umverify.UMVerifyHelper;
 import com.umeng.umverify.listener.UMAuthUIControlClickListener;
 import com.umeng.umverify.listener.UMPreLoginResultListener;
@@ -44,7 +43,7 @@ public class RNDdverifyImpl {
     private int mScreenHeightDp;
     private Boolean isLogin = false;
 
-    private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params){
+    private void sendEvent(ReactApplicationContext reactContext, String eventName, @Nullable WritableMap params){
         reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
     }
 
