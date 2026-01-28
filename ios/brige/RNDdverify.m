@@ -23,7 +23,7 @@
 //- (dispatch_queue_t)methodQueue{
 //  return dispatch_get_main_queue();
 //}
-- (void)sendJSEventWithName:(NSString *)name body:(id)body{
+- (void)sendJSEventWithName:(NSString *)name body:(NSDictionary*)body{
     [self sendEventWithName:name body:body];
 }
 - (NSArray<NSString *> *)supportedEvents
@@ -31,7 +31,7 @@
   return @[@"RN_DDVERIFY_EVENT"];
 }
 
-RCT_EXPORT_MODULE(RNDdverify);
+RCT_EXPORT_MODULE(NativeDDVerify);
 //设置SDK秘钥 RCTPromiseResolveBlock 必须和RCTPromiseRejectBlock配对使用
 RCT_REMAP_METHOD(setVerifySDKInfo, setVerifySDKInfo:(NSString *)info resolve:(RCTPromiseResolveBlock)Resolve rejecter:(RCTPromiseRejectBlock)reject){
     [[DDVerifyImpl sharedInstanceDelegate:self] setVerifySDKInfo:info resolve:Resolve reject:reject];

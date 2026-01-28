@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol DDEventEmitterDelegate <NSObject>
 
 @required  // 必需实现的方法
-- (void)sendJSEventWithName:(NSString *)name body:(id)body;
+- (void)sendJSEventWithName:(NSString *)name body:(NSDictionary*)body;
 
 @end
 

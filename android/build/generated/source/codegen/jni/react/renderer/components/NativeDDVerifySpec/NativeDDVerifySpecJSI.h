@@ -40,20 +40,26 @@ public:
     return delegate_.getPropertyNames(runtime);
   }
 
-  static constexpr std::string_view kModuleName = "RNDdverify";
+  static constexpr std::string_view kModuleName = "NativeDDVerify";
 
 protected:
   NativeDDVerifyCxxSpec(std::shared_ptr<CallInvoker> jsInvoker)
     : TurboModule(std::string{NativeDDVerifyCxxSpec::kModuleName}, jsInvoker),
       delegate_(reinterpret_cast<T*>(this), jsInvoker) {}
 
+  template <typename OnVerifyEventType> void emitOnVerifyEvent(OnVerifyEventType value) {
+    static_assert(bridging::supportsFromJs<OnVerifyEventType, jsi::Object>, "value cannnot be converted to jsi::Object");
+    static_cast<AsyncEventEmitter<jsi::Value>&>(*delegate_.eventEmitterMap_["onVerifyEvent"]).emit([jsInvoker = jsInvoker_, eventValue = value](jsi::Runtime& rt) -> jsi::Value {
+      return bridging::toJs(rt, eventValue, jsInvoker);
+    });
+  }
 
 private:
   class Delegate : public NativeDDVerifyCxxSpecJSI {
   public:
     Delegate(T *instance, std::shared_ptr<CallInvoker> jsInvoker) :
       NativeDDVerifyCxxSpecJSI(std::move(jsInvoker)), instance_(instance) {
-
+      eventEmitterMap_["onVerifyEvent"] = std::make_shared<AsyncEventEmitter<jsi::Value>>();
     }
 
     jsi::Value setVerifySDKInfo(jsi::Runtime &rt, jsi::String info) override {

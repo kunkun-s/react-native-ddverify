@@ -23,7 +23,7 @@ import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import javax.annotation.Nonnull;
 
 public abstract class NativeDDVerifySpec extends ReactContextBaseJavaModule implements TurboModule {
-  public static final String NAME = "RNDdverify";
+  public static final String NAME = "NativeDDVerify";
 
   public NativeDDVerifySpec(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -32,6 +32,10 @@ public abstract class NativeDDVerifySpec extends ReactContextBaseJavaModule impl
   @Override
   public @Nonnull String getName() {
     return NAME;
+  }
+
+  protected final void emitOnVerifyEvent(ReadableMap value) {
+    mEventEmitterCallback.invoke("onVerifyEvent", value);
   }
 
   @ReactMethod

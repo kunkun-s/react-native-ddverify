@@ -17,7 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #if RCT_NEW_ARCH_ENABLED
 //新架构
-@interface RCTNativeDDVerify : RCTEventEmitter<NativeDDVerifySpec, DDEventEmitterDelegate>
+@interface RCTNativeDDVerify : NativeDDVerifySpecBase<NativeDDVerifySpec, DDEventEmitterDelegate>
 #else
 //旧架构
 @interface RCTNativeDDVerify : NSObject

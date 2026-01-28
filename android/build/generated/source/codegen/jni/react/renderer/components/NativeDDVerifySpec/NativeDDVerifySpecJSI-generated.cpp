@@ -51,7 +51,7 @@ static jsi::Value __hostFunction_NativeDDVerifyCxxSpecJSI_cancelLoginVCAnimated(
 }
 
 NativeDDVerifyCxxSpecJSI::NativeDDVerifyCxxSpecJSI(std::shared_ptr<CallInvoker> jsInvoker)
-  : TurboModule("RNDdverify", jsInvoker) {
+  : TurboModule("NativeDDVerify", jsInvoker) {
   methodMap_["setVerifySDKInfo"] = MethodMetadata {1, __hostFunction_NativeDDVerifyCxxSpecJSI_setVerifySDKInfo};
   methodMap_["checkEnvAvailableWithAuthType"] = MethodMetadata {1, __hostFunction_NativeDDVerifyCxxSpecJSI_checkEnvAvailableWithAuthType};
   methodMap_["accelerateLoginPageWithTimeout"] = MethodMetadata {1, __hostFunction_NativeDDVerifyCxxSpecJSI_accelerateLoginPageWithTimeout};

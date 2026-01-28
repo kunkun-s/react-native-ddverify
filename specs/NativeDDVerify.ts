@@ -1,22 +1,13 @@
 import type { TurboModule } from 'react-native/Libraries/TurboModule/RCTExport';
-import { TurboModuleRegistry } from 'react-native';
+import { CodegenTypes, TurboModuleRegistry } from 'react-native';
 
-/**
- *   "codegenConfig": {
-    "name": "NativeDDVerifySpec",
-    "type": "modules",
-    "jsSrcsDir": "specs", //这个目录下可以有多个NativeDDverify文件
-    "android": {
-      "javaPackageName": "com.dddverify"
-    }
-  },
- */
 export interface Spec extends TurboModule {
 
+    readonly onVerifyEvent: CodegenTypes.EventEmitter<{ key: string; value:Object }>;//监听状态回调
     //设置秘钥
-    setVerifySDKInfo(info: string): Promise<number>;
+    setVerifySDKInfo(info: string): Promise<Object>;
     //检查环境
-    checkEnvAvailableWithAuthType(authType: string): Promise<number>;
+    checkEnvAvailableWithAuthType(authType: string): Promise<Object>;
     //预取号
     accelerateLoginPageWithTimeout(callback:(data?:Object|undefined|null) => void):void;
     //一键登录
@@ -28,4 +19,4 @@ export interface Spec extends TurboModule {
 }
 
 // 使用 getEnforcing 而不是 get，确保类型安全
-export default TurboModuleRegistry.get<Spec>('RNDdverify') as Spec|null;
+export default TurboModuleRegistry.get<Spec>('NativeDDVerify') as Spec|null;

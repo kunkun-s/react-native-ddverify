@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/kunkun-s/react-native-ddverify.git", :tag => "master" }
   
   # 加载文件
-  s.source_files  = "ios/Class/**/*.{h,m,mm}"
+  s.source_files  = "ios/**/*.{h,m,mm}","ios/Class/**/*.{h,m,mm}"
   # 排除文件
   # s.exclude_files = "Class/**/*.{storyboard,xib}"
   

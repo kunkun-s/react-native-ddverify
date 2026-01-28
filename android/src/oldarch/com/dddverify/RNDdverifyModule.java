@@ -7,6 +7,8 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.bridge.WritableMap;
 
 
 public class RNDdverifyModule extends ReactContextBaseJavaModule {
@@ -14,7 +16,14 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
 
     public RNDdverifyModule(ReactApplicationContext reactContext) {
         super(reactContext);
-        dverifyImpl = new RNDdverifyImpl(reactContext);
+        DverifyImplSendJSEvent callback = new DverifyImplSendJSEvent() {
+            @Override
+            public void send(String name, @Nullable WritableMap body) {
+                reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(name, body);
+
+            }
+        };
+        dverifyImpl = new RNDdverifyImpl(reactContext, callback);
     }
 
     @Override

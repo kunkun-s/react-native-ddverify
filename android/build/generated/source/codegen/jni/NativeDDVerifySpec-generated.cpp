@@ -50,10 +50,12 @@ NativeDDVerifySpecJSI::NativeDDVerifySpecJSI(const JavaTurboModule::InitParams &
   methodMap_["getLoginTokenWithTimeout"] = MethodMetadata {2, __hostFunction_NativeDDVerifySpecJSI_getLoginTokenWithTimeout};
   methodMap_["getVerifyToken"] = MethodMetadata {0, __hostFunction_NativeDDVerifySpecJSI_getVerifyToken};
   methodMap_["cancelLoginVCAnimated"] = MethodMetadata {0, __hostFunction_NativeDDVerifySpecJSI_cancelLoginVCAnimated};
+  eventEmitterMap_["onVerifyEvent"] = std::make_shared<AsyncEventEmitter<folly::dynamic>>();
+  configureEventEmitterCallback();
 }
 
 std::shared_ptr<TurboModule> NativeDDVerifySpec_ModuleProvider(const std::string &moduleName, const JavaTurboModule::InitParams &params) {
-  if (moduleName == "RNDdverify") {
+  if (moduleName == "NativeDDVerify") {
     return std::make_shared<NativeDDVerifySpecJSI>(params);
   }
   return nullptr;

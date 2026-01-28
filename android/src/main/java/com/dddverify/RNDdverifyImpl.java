@@ -16,7 +16,6 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.umeng.umverify.UMVerifyHelper;
 import com.umeng.umverify.listener.UMAuthUIControlClickListener;
 import com.umeng.umverify.listener.UMPreLoginResultListener;
@@ -32,7 +31,7 @@ import javax.annotation.Nullable;
 
 //新旧架构通用原生核心方法
 public class RNDdverifyImpl {
-    public static final String NAME = "RNDdverify"; //与NativeDDVerify.ts文件中的get<Spec>('RNDdverify') 保持一致
+    public static final String NAME = "NativeDDVerify"; //与NativeDDVerify.ts文件中的get<Spec>('RNDdverify') 保持一致
     private final ReactApplicationContext reactContext;
     private Boolean privacyStatus = false;//同步一键登录组件的隐私政策是否勾选
     private UMTokenResultListener mTokenListener = null;
@@ -42,12 +41,13 @@ public class RNDdverifyImpl {
     private int mScreenWidthDp;
     private int mScreenHeightDp;
     private Boolean isLogin = false;
-
+    private DverifyImplSendJSEvent callback;
     private void sendEvent(ReactApplicationContext reactContext, String eventName, @Nullable WritableMap params){
-        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
+        callback.send(eventName, params);
     }
 
-    public RNDdverifyImpl(ReactApplicationContext reactContext){
+    public RNDdverifyImpl(ReactApplicationContext reactContext, DverifyImplSendJSEvent n_callback){
+        this.callback = n_callback;
         this.reactContext = reactContext;
     }
 

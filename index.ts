@@ -1,11 +1,27 @@
 
-import { NativeModules } from 'react-native';
+import { CodegenTypes, EventSubscription, NativeEventEmitter, NativeModules } from 'react-native';
 
 import NativeDDVerify from "./specs/NativeDDVerify";
 
-const RNDdverify = NativeDDVerify ||NativeModules.RNDdverify;
+const isTurboModuleEnabled = !!(global as any).__turboModuleProxy;
+const RNDdverify = isTurboModuleEnabled? NativeDDVerify:NativeModules.NativeDDVerify;
 
-export default RNDdverify;
+export const onVerifyEvent = (callback:(value:Object ) => void):EventSubscription|null => {
+    if (isTurboModuleEnabled) {
+         return RNDdverify?.onVerifyEvent?.((event:{ key: string; value:Object }) => {
+            if (event.key === "RN_DDVERIFY_EVENT") {
+                callback(event.value);
+            }
+        })||null;
+    }else{
+        return new NativeEventEmitter(NativeModules.RNDdverify)?.addListener?.('RN_DDVERIFY_EVENT',(params)=>{
+                callback(params);
+            });
+    }
+    
+   
+    
+}
 
 /**
  * 设置密钥
@@ -13,8 +29,8 @@ export default RNDdverify;
  * @returns 
  */
 export const setVerifySDKInfo = (info:string) => {
-
-    return RNDdverify.setVerifySDKInfo(info)
+    console.log("RNDdverify",RNDdverify,);
+    return RNDdverify?.setVerifySDKInfo?.(info)
 }
 /**
  * 检查环境 
@@ -24,7 +40,7 @@ export const setVerifySDKInfo = (info:string) => {
  *  
  */
 export const checkEnvAvailableWithAuthType = (authType:string) => {
-    return RNDdverify.checkEnvAvailableWithAuthType(authType)
+    return RNDdverify?.checkEnvAvailableWithAuthType?.(authType)
 }
 
 /**
@@ -32,8 +48,8 @@ export const checkEnvAvailableWithAuthType = (authType:string) => {
  * @param {*} BackHandler 
  * @returns 
  */
-export const accelerateLoginPageWithTimeout = (BackHandler:Function)=>{
-    return RNDdverify.accelerateLoginPageWithTimeout(BackHandler);
+export const accelerateLoginPageWithTimeout = (BackHandler:(data?:Object|undefined|null) => void)=>{
+    return RNDdverify?.accelerateLoginPageWithTimeout?.(BackHandler);
 }
 /**
  * 一键登录
@@ -43,7 +59,7 @@ export const accelerateLoginPageWithTimeout = (BackHandler:Function)=>{
     接口回调其他事件：600001（授权页唤起成功）、600002（授权页唤起失败）、600000（成功获取Token）、 600011（获取Token失败）、600015（获取Token超时）、600013（运营商维护升级，该功能不可用）、600014（运营商维护升级，该功能已达最大调用次数）.....
  */
 export const getLoginTokenWithTimeout = ( timeOut:string, params:Object ) => {
-    return RNDdverify.getLoginTokenWithTimeout( timeOut, params )
+    return RNDdverify?.getLoginTokenWithTimeout?.( timeOut, params )
 }
 /**
  * 获取VerifyToken
@@ -54,14 +70,14 @@ export const getLoginTokenWithTimeout = ( timeOut:string, params:Object ) => {
 export const getVerifyToken = () => {
 
     return new Promise((resolve, reject)=>{
-        RNDdverify.getVerifyToken().then((token:string)=>{
+        RNDdverify?.getVerifyToken?.()?.then?.((token:string)=>{
             resolve(token)
-        }).catch((e:Object)=>{
+        })?.catch((e:Object)=>{
             reject(-1)
         })
     })
 }
 //关闭授权页面
 export const cancelLoginVCAnimated = () => {
-     RNDdverify.cancelLoginVCAnimated()
+     RNDdverify?.cancelLoginVCAnimated?.()
 }
