@@ -3,22 +3,24 @@ import { CodegenTypes, EventSubscription, NativeEventEmitter, NativeModules } fr
 
 import NativeDDVerify from "./specs/NativeDDVerify";
 
-const isTurboModuleEnabled = !!(global as any).__turboModuleProxy;
+const isTurboModuleEnabled = !!(global as any).__turboModuleProxy || !!(global as any).RN$Bridgeless;
+
 const RNDdverify = isTurboModuleEnabled? NativeDDVerify:NativeModules.NativeDDVerify;
 
 export const onVerifyEvent = (callback:(value:Object ) => void):EventSubscription|null => {
+
     if (isTurboModuleEnabled) {
          return RNDdverify?.onVerifyEvent?.((event:{ key: string; value:Object }) => {
             if (event.key === "RN_DDVERIFY_EVENT") {
                 callback(event.value);
             }
         })||null;
-    }else{
-        return new NativeEventEmitter(NativeModules.RNDdverify)?.addListener?.('RN_DDVERIFY_EVENT',(params)=>{
+    }else if(RNDdverify){
+        return new NativeEventEmitter(RNDdverify)?.addListener?.('RN_DDVERIFY_EVENT',(params)=>{
                 callback(params);
             });
     }
-    
+    return null;
    
     
 }
@@ -29,7 +31,6 @@ export const onVerifyEvent = (callback:(value:Object ) => void):EventSubscriptio
  * @returns 
  */
 export const setVerifySDKInfo = (info:string) => {
-    console.log("RNDdverify",RNDdverify,);
     return RNDdverify?.setVerifySDKInfo?.(info)
 }
 /**

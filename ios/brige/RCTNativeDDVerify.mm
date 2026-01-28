@@ -1,6 +1,6 @@
 //
 //  RCTNativeDDVerify.m
-//  RNDdverify
+//  NativeDDVerify
 //
 //  Created by ddmobile on 2025/12/8.
 //
@@ -13,7 +13,6 @@
 //新架构
 RCT_EXPORT_MODULE(NativeDDVerify)
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:(const facebook::react::ObjCTurboModule::InitParams &)params {
-    NSLog(@"[RNDdverify] 创建 TurboModule JSI 实例");
     return std::make_shared<facebook::react::NativeDDVerifySpecJSI>(params);
 }
 - (void)sendJSEventWithName:(NSString *)name body:(NSDictionary*)body{

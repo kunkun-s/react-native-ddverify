@@ -31,19 +31,18 @@ import javax.annotation.Nullable;
 
 //新旧架构通用原生核心方法
 public class RNDdverifyImpl {
-    public static final String NAME = "NativeDDVerify"; //与NativeDDVerify.ts文件中的get<Spec>('RNDdverify') 保持一致
+    public static final String NAME = "NativeDDVerify"; //与NativeDDVerify.ts文件中的get<Spec>('NativeDDVerify') 保持一致
     private final ReactApplicationContext reactContext;
     private Boolean privacyStatus = false;//同步一键登录组件的隐私政策是否勾选
     private UMTokenResultListener mTokenListener = null;
     private UMVerifyHelper umVerifyHelper = null;
     private Callback myCallBack = null;
-    private Promise myPromise = null;
     private int mScreenWidthDp;
     private int mScreenHeightDp;
     private Boolean isLogin = false;
     private DverifyImplSendJSEvent callback;
     private void sendEvent(ReactApplicationContext reactContext, String eventName, @Nullable WritableMap params){
-        callback.send(eventName, params);
+        this.callback.send(eventName, params);
     }
 
     public RNDdverifyImpl(ReactApplicationContext reactContext, DverifyImplSendJSEvent n_callback){
