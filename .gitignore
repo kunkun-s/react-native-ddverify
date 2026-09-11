@@ -1,0 +1,51 @@
+# ==========================================================
+# OSX
+# ==========================================================
+.DS_Store
+
+# ==========================================================
+# node.js
+# ==========================================================
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# ==========================================================
+# Android / Gradle
+# ==========================================================
+# ⚠️ 只忽略 build 目录（codegen/gradle 产物），不要写成 build.gradle
+# 这些产物是 RN codegen 在构建时自动生成的，提交后会在 RN 版本升级时
+# 与新生成的头文件冲突（如 SpecJSI-generated.cpp 引用了已改名的类）
+android/build/
+android/.gradle/
+android/.cxx/
+.idea/
+.gradle
+local.properties
+*.iml
+*.classpath
+*.project
+.settings/
+
+# ==========================================================
+# iOS / Xcode
+# ==========================================================
+ios/build/
+ios/Pods/
+DerivedData/
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+
+# ==========================================================
+# BUCK
+# ==========================================================
+buck-out/
+\.buckd/
+*.keystore
