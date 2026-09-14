@@ -10,8 +10,9 @@ export interface Spec extends TurboModule {
     checkEnvAvailableWithAuthType(authType: string): Promise<Object>;
     //预取号
     accelerateLoginPageWithTimeout(callback:(data?:Object|undefined|null) => void):void;
-    //一键登录
-    getLoginTokenWithTimeout(timeout:string, params:Object):void;
+    //一键登录。callback 与 onVerifyEvent 收到的事件内容完全一致（同一次授权页流程的所有事件都会回调），
+    //可能被多次调用，请按 resultCode 判断。codegen 不支持可选参数，JS 侧未传时由 index.ts 补一个空函数
+    getLoginTokenWithTimeout(timeout:string, params:Object, callback:(data:Object) => void):void;
     //获取登录校验token
     getVerifyToken():Promise<string>;
     //关闭授权页面

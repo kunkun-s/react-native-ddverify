@@ -32,7 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
                                reject:(RCTPromiseRejectBlock)reject;
 - (void)accelerateLoginPageWithTimeout:(RCTResponseSenderBlock)callback;
 - (void)getLoginTokenWithTimeout:(NSString *)timeout
-                          params:(NSDictionary *)params;
+                          params:(NSDictionary *)params
+                        callback:(RCTResponseSenderBlock)callback;
 - (void)getVerifyToken:(RCTPromiseResolveBlock)resolve
                 reject:(RCTPromiseRejectBlock)reject;
 - (void)cancelLoginVCAnimated;

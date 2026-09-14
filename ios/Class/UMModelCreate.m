@@ -8,7 +8,7 @@
 #import "DDVerifyCustomView.h"
 #define UM_SCREEN_HEIGHT [[UIScreen mainScreen] bounds].size.height
 #define UM_SCREEN_WIDTH [[UIScreen mainScreen] bounds].size.width
-#define IS_HORIZONTAL (UM_SCREEN_WIDTH > UM_SCREEN_WIDTH)
+#define IS_HORIZONTAL (UM_SCREEN_WIDTH > UM_SCREEN_HEIGHT)
 
 
 #define UM_Alert_NAV_BAR_HEIGHT      55.0
@@ -130,15 +130,6 @@ static CGFloat ratio ;
         CGFloat width = superViewSize.height;
         CGFloat height = width;
         return CGRectMake(superViewSize.width - 15 - width, 0, width, height);
-    };
-    model.loginBtnFrameBlock = ^CGRect(CGSize screenSize, CGSize superViewSize, CGRect frame) {
-        if ([self isHorizontal:screenSize]) {
-            frame.origin.y = 20;
-            
-            return frame;
-        }
-
-        return frame;
     };
     model.sloganFrameBlock = ^CGRect(CGSize screenSize, CGSize superViewSize, CGRect frame) {
         if ([self isHorizontal:screenSize]) {

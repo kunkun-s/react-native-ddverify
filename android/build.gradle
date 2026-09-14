@@ -13,18 +13,28 @@ def isNewArchitectureEnabled() {
     return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
 
+//依赖方（App 工程）在根 build.gradle / gradle.properties 里定义的值优先，这里只提供兜底。
+//原来的兜底值 "30.0.2" 既不是合法的 compileSdk 平台，也不是合法的 build-tools 版本，
+//一旦 App 工程没有定义就会直接构建失败
+def safeExtGet(prop, fallback) {
+    return rootProject.hasProperty(prop) ? rootProject.getProperty(prop) : fallback
+}
+
 apply plugin: 'com.android.library'
 if (isNewArchitectureEnabled()) {
     apply plugin: 'com.facebook.react'
 }
 
 android {
-    compileSdkVersion rootProject.hasProperty('compileSdkVersion') ? rootProject.compileSdkVersion : "30.0.2"
-    buildToolsVersion  rootProject.hasProperty('buildToolsVersion') ? rootProject.buildToolsVersion : "30.0.2"
+    compileSdkVersion safeExtGet('compileSdkVersion', 34)
+    //buildToolsVersion 交给 AGP 自己决定（AGP 8.x 已不需要显式指定），App 工程显式指定时才跟随
+    if (rootProject.hasProperty('buildToolsVersion')) {
+        buildToolsVersion rootProject.getProperty('buildToolsVersion')
+    }
     namespace "com.dddverify"
     defaultConfig {
-        minSdkVersion rootProject.hasProperty('minSdkVersion') ? rootProject.minSdkVersion : "21"
-        targetSdkVersion rootProject.hasProperty('targetSdkVersion') ? rootProject.targetSdkVersion : "30"
+        minSdkVersion safeExtGet('minSdkVersion', 21)
+        targetSdkVersion safeExtGet('targetSdkVersion', 34)
         versionCode 1
         versionName "1.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
@@ -59,7 +69,9 @@ dependencies {
     implementation  'com.umeng.umsdk:uverify:4.0.0'// 必选
     implementation  'com.umeng.umsdk:uverify-main:2.2.3'// 必选
     implementation  'com.umeng.umsdk:uverify-logger:2.2.2'// 必选
-    //noinspection GradleCompatible
-    implementation 'com.android.support:appcompat-v7:27.1.1'
+    //友盟授权页的 Activity（authsdk_activity_dialog 等）主题继承自 Theme.AppCompat.Light.NoActionBar，
+    //所以 appcompat 是运行时必需的，不能删除。
+    //这里必须用 AndroidX 坐标：RN 0.71+ 强制 AndroidX，旧的 support-v7 只能靠 jetifier 才能编译
+    implementation 'androidx.appcompat:appcompat:1.6.1'
 }
   

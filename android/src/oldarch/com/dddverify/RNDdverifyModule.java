@@ -1,6 +1,8 @@
 
 package com.dddverify;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -53,8 +55,8 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
     }
     /* 一键登录 */
     @ReactMethod
-    public void getLoginTokenWithTimeout(String timeout, ReadableMap params){
-        dverifyImpl.getLoginTokenWithTimeout(timeout, params);
+    public void getLoginTokenWithTimeout(String timeout, ReadableMap params, Callback callback){
+        dverifyImpl.getLoginTokenWithTimeout(timeout, params, callback);
     }
     /* 关闭一键登录授权页 */
     @ReactMethod

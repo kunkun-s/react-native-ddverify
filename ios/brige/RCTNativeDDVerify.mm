@@ -17,7 +17,8 @@ RCT_EXPORT_MODULE(NativeDDVerify)
 }
 - (void)sendJSEventWithName:(NSString *)name body:(NSDictionary*)body{
 //CodegenTypes.EventEmitter ->    "RN_DDVERIFY_EVENT"
-    [self emitOnVerifyEvent:@{@"key":name,@"value":body}];
+    //body 为 nil 时字典字面量会直接崩溃，这里兜底成空字典
+    [self emitOnVerifyEvent:@{@"key":name,@"value":body ?: @{}}];
 }
 // 必须添加这个方法，否则新架构下模块不会被正确识别
 + (BOOL)requiresMainQueueSetup {
@@ -41,8 +42,9 @@ RCT_EXPORT_MODULE(NativeDDVerify)
     [[DDVerifyImpl sharedInstanceDelegate:self] accelerateLoginPageWithTimeout:callback];
 }
 - (void)getLoginTokenWithTimeout:(NSString *)timeout
-                          params:(NSDictionary *)params{
-    [[DDVerifyImpl sharedInstanceDelegate:self] getLoginTokenWithTimeout:timeout params:params];
+                          params:(NSDictionary *)params
+                        callback:(RCTResponseSenderBlock)callback{
+    [[DDVerifyImpl sharedInstanceDelegate:self] getLoginTokenWithTimeout:timeout params:params callback:callback];
 }
 - (void)getVerifyToken:(RCTPromiseResolveBlock)resolve
                 reject:(RCTPromiseRejectBlock)reject{

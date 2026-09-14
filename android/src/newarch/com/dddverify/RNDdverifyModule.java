@@ -1,23 +1,13 @@
 package com.dddverify;
-import androidx.annotation.NonNull;
+
 import androidx.annotation.Nullable;
 
-import com.facebook.proguard.annotations.DoNotStrip;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
-
-import java.util.Map;
-import java.util.HashMap;
-
-import javax.annotation.Nonnull;
 
 public class RNDdverifyModule extends NativeDDVerifySpec {
     private RNDdverifyImpl dverifyImpl;
@@ -53,9 +43,8 @@ public class RNDdverifyModule extends NativeDDVerifySpec {
         dverifyImpl.accelerateLoginPageWithTimeout(callback);
     }
     @Override
-    public void getLoginTokenWithTimeout(String timeout, ReadableMap params){
-        dverifyImpl.getLoginTokenWithTimeout(timeout, params);
-
+    public void getLoginTokenWithTimeout(String timeout, ReadableMap params, Callback callback){
+        dverifyImpl.getLoginTokenWithTimeout(timeout, params, callback);
     }
     @Override
     public void getVerifyToken(Promise promise){

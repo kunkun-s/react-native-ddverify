@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Build;
-import android.view.Surface;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -27,11 +26,19 @@ import com.umeng.umverify.view.UMAuthUIConfig;
 
 import org.json.JSONObject;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 //新旧架构通用原生核心方法
 public class RNDdverifyImpl {
     public static final String NAME = "NativeDDVerify"; //与NativeDDVerify.ts文件中的get<Spec>('NativeDDVerify') 保持一致
+    private static final String EVENT_NAME = "RN_DDVERIFY_EVENT";
+    //授权页流程已结束的结果码。收到后释放本次调用的回调引用，避免长期持有 JS 侧闭包（页面卸载后无法回收）
+    private static final List<String> LOGIN_TERMINAL_CODE =
+            Arrays.asList("600000", "600002", "600011", "600013", "600014", "600015", "700000");
+
     private final ReactApplicationContext reactContext;
     private Boolean privacyStatus = false;//同步一键登录组件的隐私政策是否勾选
     private UMTokenResultListener mTokenListener = null;
@@ -41,8 +48,34 @@ public class RNDdverifyImpl {
     private int mScreenHeightDp;
     private Boolean isLogin = false;
     private DverifyImplSendJSEvent callback;
+    //setVerifySDKInfo 的 Promise。SDK 回调会多次触发，只有首次回调 resolve，
+    //这里必须是成员变量：监听器只在第一次 setVerifySDKInfo 时创建，
+    //若把 Promise 放在方法局部变量里被闭包捕获，第二次调用时闭包仍指向第一次的 Promise，新 Promise 永远不会 resolve。
+    private Promise mTokenPromise = null;
+    private boolean mTokenRetFirst = true;
+    //getLoginTokenWithTimeout 传入的可选回调，与 RN_DDVERIFY_EVENT 事件内容一致
+    private Callback mLoginCallback = null;
+
+    /**
+     * 所有下发给 JS 的结果统一走这里：
+     * 1. RN_DDVERIFY_EVENT 事件（保持原有行为，onVerifyEvent 监听）
+     * 2. getLoginTokenWithTimeout 传入的可选回调（仅本次授权页流程有效）
+     */
     private void sendEvent(ReactApplicationContext reactContext, String eventName, @Nullable WritableMap params){
         this.callback.send(eventName, params);
+
+        Callback loginCallback = mLoginCallback;
+        if (loginCallback == null || !EVENT_NAME.equals(eventName)) {
+            return;
+        }
+        try {
+            loginCallback.invoke(params);
+        } catch (Exception e) {
+            //JS 侧已销毁（如页面已卸载），忽略
+        }
+        if (params != null && LOGIN_TERMINAL_CODE.contains(params.getString("resultCode"))) {
+            mLoginCallback = null;
+        }
     }
 
     public RNDdverifyImpl(ReactApplicationContext reactContext, DverifyImplSendJSEvent n_callback){
@@ -50,32 +83,45 @@ public class RNDdverifyImpl {
         this.reactContext = reactContext;
     }
 
-    private void updateScreenSize(int authPageScreenOrientation) {
-        int screenHeightDp = AppUtils.px2dp(this.reactContext.getApplicationContext(), AppUtils.getPhoneHeightPixels(this.reactContext));
-        int screenWidthDp = AppUtils.px2dp(this.reactContext.getApplicationContext(), AppUtils.getPhoneWidthPixels(this.reactContext));
-        int rotation = this.reactContext.getCurrentActivity().getWindowManager().getDefaultDisplay().getRotation();
-        if (authPageScreenOrientation == ActivityInfo.SCREEN_ORIENTATION_BEHIND) {
-            authPageScreenOrientation = this.reactContext.getCurrentActivity().getRequestedOrientation();
-        }
-        if (authPageScreenOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                || authPageScreenOrientation == ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-                || authPageScreenOrientation == ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT) {
-            rotation = Surface.ROTATION_180;
-        }else if (authPageScreenOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                || authPageScreenOrientation == ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-                || authPageScreenOrientation == ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE){
-            rotation = Surface.ROTATION_180;
-        }
-        switch (rotation) {
-            case Surface.ROTATION_180:
-                mScreenWidthDp = screenWidthDp;
-                mScreenHeightDp = screenHeightDp;
-                break;
-        }
+    /**
+     * 计算授权页控件坐标用的屏幕宽高（dp）。
+     *
+     * 授权页固定按竖屏全屏展示（见 getLoginTokenWithTimeout 里的 setScreenOrientation），所以这里统一取竖屏宽高。
+     * 注意不要改回按 Display.getRotation() 分支赋值：宿主 Activity 的 requestedOrientation 为 UNSPECIFIED 时
+     * rotation 是 ROTATION_0，旧实现只处理 ROTATION_180，会让宽高保持 0，下方所有偏移量被算成负数。
+     */
+    private void updateScreenSize() {
+        mScreenWidthDp = AppUtils.px2dp(this.reactContext.getApplicationContext(), AppUtils.getPhoneWidthPixels(this.reactContext));
+        mScreenHeightDp = AppUtils.px2dp(this.reactContext.getApplicationContext(), AppUtils.getPhoneHeightPixels(this.reactContext));
     }
+    /**
+     * 只有首次回调 resolve setVerifySDKInfo 的 Promise（保持原有行为），
+     * 之后统一走 RN_DDVERIFY_EVENT 事件下发。
+     */
+    private void dispatchTokenResult(WritableMap dic) {
+        if (mTokenRetFirst) {
+            mTokenRetFirst = false;
+            Promise promise = mTokenPromise;
+            mTokenPromise = null;
+            if (promise != null) {
+                try {
+                    //首次
+                    promise.resolve(dic);
+                } catch (Exception e) {
+                    //Promise 已失效（如 JS 侧 reload），忽略
+                }
+            }
+            return;
+        }
+        sendEvent(reactContext, EVENT_NAME, dic);
+    }
+
     public void setVerifySDKInfo(String info, Promise promise){
 
-        final Boolean[] b = {false};
+        //每次设置密钥都重置 Promise 的接收方，避免第二次调用时 Promise 永远不 resolve
+        mTokenPromise = promise;
+        mTokenRetFirst = true;
+
         if (mTokenListener == null){
             //回调监听
             mTokenListener = new UMTokenResultListener() {
@@ -84,7 +130,9 @@ public class RNDdverifyImpl {
                     reactContext.runOnUiQueueThread(new Runnable() {
                         @Override
                         public void run() {
-                            umVerifyHelper.hideLoginLoading();
+                            if (umVerifyHelper != null) {
+                                umVerifyHelper.hideLoginLoading();
+                            }
                             WritableMap dic = Arguments.createMap();
                             dic.putString("resultCode", "600010");
                             dic.putString("msg", "解析错误");
@@ -104,22 +152,7 @@ public class RNDdverifyImpl {
                                 }
                             }
                             //通过监听通知React当前时间结果
-
-                            if (b[0] == false){
-                                b[0] = true;
-                                try {
-                                    //首次
-                                    promise.resolve(dic);
-                                } catch (Exception e) {
-
-                                }
-
-                            } else  {
-                                sendEvent(reactContext, "RN_DDVERIFY_EVENT", dic);
-
-                            }
-
-
+                            dispatchTokenResult(dic);
                         }
                     });
                 }
@@ -130,7 +163,9 @@ public class RNDdverifyImpl {
                         @Override
                         public void run() {
 
-                            umVerifyHelper.hideLoginLoading();
+                            if (umVerifyHelper != null) {
+                                umVerifyHelper.hideLoginLoading();
+                            }
                             WritableMap dic = Arguments.createMap();
                             dic.putString("resultCode", "600010");
                             dic.putString("msg", "解析错误");
@@ -151,17 +186,7 @@ public class RNDdverifyImpl {
                                 }
                             }
 
-                            if (b[0] == false){
-                                b[0] = true;
-                                try {
-                                    //首次
-                                    promise.resolve(dic);
-                                } catch (Exception e) {
-
-                                }
-                            } else {
-                                sendEvent(reactContext, "RN_DDVERIFY_EVENT", dic);
-                            }
+                            dispatchTokenResult(dic);
                         }
                     });
                 }
@@ -178,7 +203,10 @@ public class RNDdverifyImpl {
         umVerifyHelper.setUIClickListener(new UMAuthUIControlClickListener() {
             @Override
             public void onClick(String code, Context context, String jsonObj) {
-                if(code == "700003" || code == "700008"){//70003点击底部同意按钮，700008点击二次弹窗协议同意并继续
+                //这里必须用 equals 比较字符串。用 == 只是依赖字符串常量池的巧合，
+                //一旦 SDK 改成动态拼接或开启 R8 优化就会失效，privacyStatus 不再更新，
+                //微信/苹果按钮会一直提示"请阅读并勾选底部服务条款与协议"
+                if("700003".equals(code) || "700008".equals(code)){//70003点击底部同意按钮，700008点击二次弹窗协议同意并继续
                     try {
                         JSONObject jobje  = new JSONObject(jsonObj);
                         privacyStatus = jobje.getBoolean("isChecked");
@@ -196,22 +224,31 @@ public class RNDdverifyImpl {
         decs.putString("resultCode", isLogin ? "600000" : "600017");
         decs.putString("msg",isLogin ? "解析密钥成功" : "解析密钥失败");
         promise.resolve(decs);
-        if (umVerifyHelper != null){
-            Boolean checkBool = false;
-            WritableMap dic = Arguments.createMap();
-            if (authType.equals(new String("UMPNSAuthTypeLoginToken")) ){
-                //检测一键登录
 
-                umVerifyHelper.checkEnvAvailable(UMVerifyHelper.SERVICE_TYPE_LOGIN);
-            }else if (authType.equals(new String("UMPNSAuthTypeVerifyToken")) ){
-                //检测手机号是否是本机号码
-
-            }
-
+        if (umVerifyHelper == null){
+            return;
+        }
+        if ("UMPNSAuthTypeLoginToken".equals(authType) ){
+            //检测一键登录
+            umVerifyHelper.checkEnvAvailable(UMVerifyHelper.SERVICE_TYPE_LOGIN);
+        }else if ("UMPNSAuthTypeVerifyToken".equals(authType) ){
+            //检测手机号是否是本机号码
+            umVerifyHelper.checkEnvAvailable(UMVerifyHelper.SERVICE_TYPE_AUTH);
         }
     }
 
     public void accelerateLoginPageWithTimeout(Callback callback){
+
+        if (umVerifyHelper == null){
+            //未调用 setVerifySDKInfo，直接回调错误，避免 NPE 崩在原生
+            if (callback != null){
+                WritableMap dic = Arguments.createMap();
+                dic.putString("resultCode", "600012");
+                dic.putString("msg", "未初始化，请先调用 setVerifySDKInfo");
+                callback.invoke(dic);
+            }
+            return;
+        }
 
         myCallBack = callback;
 
@@ -234,9 +271,11 @@ public class RNDdverifyImpl {
 
                 if (myCallBack != null){
                     WritableMap dic = Arguments.createMap();
-                    dic.putString("resultCode", "600012");
-                    dic.putString("msg", "预取号失败");
-                    myCallBack.invoke(s1);
+                    //与 iOS 保持一致：失败同样返回字典，而不是只回一个字符串，
+                    //否则 JS 侧按 params.resultCode 取值会全部拿到 undefined
+                    dic.putString("resultCode", (s == null || s.isEmpty()) ? "600012" : s);
+                    dic.putString("msg", (s1 == null || s1.isEmpty()) ? "预取号失败" : s1);
+                    myCallBack.invoke(dic);
                     myCallBack = null;
                 }
 
@@ -244,12 +283,25 @@ public class RNDdverifyImpl {
         });
     }
 
-    public void getLoginTokenWithTimeout(String timeout, ReadableMap params){
+    public void getLoginTokenWithTimeout(String timeout, ReadableMap params, Callback callback){
 
-        if (!isLogin) {
-            //当前的环境不可用
+        //上一次授权页流程残留的回调先释放，避免回调到已经卸载的页面
+        mLoginCallback = null;
+
+        if (umVerifyHelper == null || !isLogin) {
+            //原来是静默 return，JS 侧永远收不到任何结果。这里补发一次"授权页唤起失败"，
+            //事件和本次回调都能拿到，不影响原有 resultCode 的判定逻辑
+            WritableMap dic = Arguments.createMap();
+            dic.putString("resultCode", "600002");
+            dic.putString("msg", umVerifyHelper == null
+                    ? "未初始化，请先调用 setVerifySDKInfo"
+                    : "当前环境不可用，授权页未唤起");
+            mLoginCallback = callback;
+            sendEvent(reactContext, EVENT_NAME, dic);
             return;
         }
+
+        mLoginCallback = callback;
         privacyStatus = false;
         String onePrivacy = "";
         String oneUrl = "";
@@ -264,11 +316,11 @@ public class RNDdverifyImpl {
             twoUrl = params.getMap("privacyTwo").getString("url");
         }
         int authPageOrientation = ActivityInfo.SCREEN_ORIENTATION_BEHIND;
-        if (Build.VERSION.SDK_INT == 26) {
+        if (Build.VERSION.SDK_INT == 26 && reactContext.getCurrentActivity() != null) {
             reactContext.getCurrentActivity().setRequestedOrientation(authPageOrientation);
             authPageOrientation = ActivityInfo.SCREEN_ORIENTATION_BEHIND;
         }
-        updateScreenSize(authPageOrientation);
+        updateScreenSize();
         final int logBtnOffsetY = (int) (mScreenHeightDp * 0.5) - 50;
         final int sloganHeight = 30;
         final int numberHeight = 50;
@@ -362,10 +414,27 @@ public class RNDdverifyImpl {
                 .setScreenOrientation(authPageOrientation)
                 .create());
 
-        umVerifyHelper.getLoginToken(reactContext, 5000);
+        //JS 侧与 iOS 保持一致，传的是秒；Android SDK 需要毫秒，最少等待 5 秒
+        int nTimeout = 5000;
+        if (timeout != null) {
+            try {
+                nTimeout = Integer.parseInt(timeout.trim()) * 1000;
+            } catch (NumberFormatException e) {
+                nTimeout = 5000;
+            }
+        }
+        if (nTimeout < 5000) {
+            nTimeout = 5000;
+        }
+        umVerifyHelper.getLoginToken(reactContext, nTimeout);
     }
 
     public void getVerifyToken(Promise promise){
+
+        if (umVerifyHelper == null) {
+            promise.reject("-1", "未初始化，请先调用 setVerifySDKInfo");
+            return;
+        }
 
         umVerifyHelper.setAuthListener(new UMTokenResultListener() {
             @Override
@@ -396,11 +465,19 @@ public class RNDdverifyImpl {
     }
 
     public void cancelLoginVCAnimated(){
+        //本次授权页流程结束，释放回调引用
+        mLoginCallback = null;
+        if (umVerifyHelper == null) {
+            //未初始化，无需关闭（避免 NPE，componentWillUnmount 里会直接调用）
+            return;
+        }
         reactContext.runOnUiQueueThread(new Runnable() {
             @Override
             public void run() {
-                umVerifyHelper.hideLoginLoading();
-                umVerifyHelper.quitLoginPage();
+                if (umVerifyHelper != null) {
+                    umVerifyHelper.hideLoginLoading();
+                    umVerifyHelper.quitLoginPage();
+                }
             }
         });
     }

@@ -41,7 +41,16 @@ drawable 文件中中的图片更换，并保留图片名称即可。
 `使用verifySDK之前，需要向完成UMCommon基础组件注册。完成友盟的注册之后才能使用`
 
 ```javascript
-import RNDdverify from 'react-native-ddverify';
+//本库只有具名导出，没有默认导出
+import {
+    onVerifyEvent,
+    setVerifySDKInfo,
+    checkEnvAvailableWithAuthType,
+    accelerateLoginPageWithTimeout,
+    getLoginTokenWithTimeout,
+    getVerifyToken,
+    cancelLoginVCAnimated,
+} from 'react-native-ddverify';
 ```
 设置密钥、验证环境、预取号
 ```javascript
@@ -87,6 +96,9 @@ import RNDdverify from 'react-native-ddverify';
 
 发起一键登录
 ```js
+ //第三个参数可选。不传时和以前完全一样，只通过 onVerifyEvent(或下面的 onVerifyEvent 监听)收结果；
+ //传了则本次授权页流程的事件会同时回调到这里，内容与 onVerifyEvent 完全一致、可能被多次调用，
+ //需要自己按 resultCode 判断（700000 关闭、600001 唤起成功、700002 点击登录按钮、600000 取token成功 …）
  getLoginTokenWithTimeout("3",{
                 navTitle: "",
                 sloganText: I18n.t('login.title21'),
@@ -101,8 +113,18 @@ import RNDdverify from 'react-native-ddverify';
                 //     title: "《隐私政策》",
                 //     url: ""
                 // }
+            },(params)=>{
+                //本次授权页流程的结果（可选写法）
+                if (`${params?.resultCode}` == '600000' && params.token) {
+                    //获取token成功
+                }
             })
 ```
+
+> `timeOut` 单位是**秒**（与 iOS 一致）。Android 侧最少等待 5 秒，传小于 5 的值会被兜底到 5 秒。
+>
+> 环境不可用或未调用 `setVerifySDKInfo` 时，会回一个 `resultCode = "600002"`（授权页唤起失败）的结果，
+> 事件与上面的回调都能收到，不会再像以前那样静默无响应。
 关闭一键登录
 ```js
 cancelLoginVCAnimated()

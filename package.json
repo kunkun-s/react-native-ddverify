@@ -1,8 +1,9 @@
 {
   "name": "react-native-ddverify",
-  "version": "2.3.5",
-  "description": "ios -> UMVerify:3.9.0(3.1.0)、UMCommon:7.5.0、android -> UMCommon:9.8.8、UMVerify:4.0.0",
+  "version": "3.0.1",
+  "description": "ios -> UMVerify:3.1.0、UMCommon:7.5.x、UMDevice；android -> UMCommon:9.8.8、uverify:4.0.0",
   "main": "index.ts",
+  "types": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,8 +24,9 @@
     "url": "git+https://github.com/kunkun-s/react-native-ddverify.git"
   },
   "author": "",
-  "license": "",
+  "license": "MIT",
   "peerDependencies": {
-     "react-native": "^0.41.2"
+    "react": ">=18.0.0",
+    "react-native": ">=0.74.0"
   }
 }
