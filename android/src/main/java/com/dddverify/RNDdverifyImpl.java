@@ -60,8 +60,19 @@ public class RNDdverifyImpl {
      * 所有下发给 JS 的结果统一走这里：
      * 1. RN_DDVERIFY_EVENT 事件（保持原有行为，onVerifyEvent 监听）
      * 2. getLoginTokenWithTimeout 传入的可选回调（仅本次授权页流程有效）
+     *
+     * 【必须先把值取出来、复制一份，再往下发】
+     * WritableNativeMap 是一次性的：新架构的 send 内部走 putMap -> putNativeMap，
+     * 会 consume 掉传进去的 map，之后再读会抛 ObjectAlreadyConsumedException（Map already consumed）。
+     * 所以：
+     * - resultCode 必须在 send 之前读完；
+     * - 事件和回调是两个消费者，不能共用同一个实例，回调拿副本；
+     * - 副本也必须在下发之前复制（copy 内部的 mergeNativeMap 走的是 native，用不到 Java 侧缓存）。
      */
     private void sendEvent(ReactApplicationContext reactContext, String eventName, @Nullable WritableMap params){
+        final String resultCode = params == null ? null : params.getString("resultCode");
+        final WritableMap callbackParams = params == null ? null : params.copy();
+
         this.callback.send(eventName, params);
 
         Callback loginCallback = mLoginCallback;
@@ -69,11 +80,11 @@ public class RNDdverifyImpl {
             return;
         }
         try {
-            loginCallback.invoke(params);
+            loginCallback.invoke(callbackParams);
         } catch (Exception e) {
             //JS 侧已销毁（如页面已卸载），忽略
         }
-        if (params != null && LOGIN_TERMINAL_CODE.contains(params.getString("resultCode"))) {
+        if (resultCode != null && LOGIN_TERMINAL_CODE.contains(resultCode)) {
             mLoginCallback = null;
         }
     }
