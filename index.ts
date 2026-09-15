@@ -75,19 +75,17 @@ export const accelerateLoginPageWithTimeout = (BackHandler:(data?:Object|undefin
  * 一键登录
  * @param {最多等待多少秒} timeOut  （android 侧最少等待 5 秒）
  * @param {*} params 授权页配置
- * @param {*} callback 可选。与 onVerifyEvent 收到的事件内容完全一致（本次授权页流程的所有事件都会回调，
- *                     可能被多次调用），请按 resultCode 判断；不传不影响 onVerifyEvent 的使用
+ * 结果全部通过 onVerifyEvent 下发，请按 resultCode 自行判断。
  * 授权页控件点击事件：700000（点击授权页返回按钮）、700001（点击切换其他登录方式）、
     700002（点击登录按钮事件，根据返回字典里面的 "isChecked"字段来区分check box是否被选中，只有被选中的时候        *          内部才会去获取Token）、700003（点击check box事件）、700004（点击协议富文本文字）
     接口回调其他事件：600001（授权页唤起成功）、600002（授权页唤起失败）、600000（成功获取Token）、 600011（获取Token失败）、600015（获取Token超时）、600013（运营商维护升级，该功能不可用）、600014（运营商维护升级，该功能已达最大调用次数）.....
  */
-export const getLoginTokenWithTimeout = ( timeOut:string, params:Object, callback?:(data:Object) => void ) => {
+export const getLoginTokenWithTimeout = ( timeOut:string, params:Object ) => {
     if (!RNDdverify?.getLoginTokenWithTimeout) {
         console.warn(MODULE_MISSING_ERROR);
         return;
     }
-    //原生侧该参数是必传的（codegen 不支持可选回调），未传时补一个空函数
-    return RNDdverify.getLoginTokenWithTimeout( timeOut, params, callback || (() => {}) );
+    return RNDdverify.getLoginTokenWithTimeout( timeOut, params );
 }
 /**
  * 获取VerifyToken

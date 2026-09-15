@@ -42,9 +42,8 @@ RCT_EXPORT_MODULE(NativeDDVerify)
     [[DDVerifyImpl sharedInstanceDelegate:self] accelerateLoginPageWithTimeout:callback];
 }
 - (void)getLoginTokenWithTimeout:(NSString *)timeout
-                          params:(NSDictionary *)params
-                        callback:(RCTResponseSenderBlock)callback{
-    [[DDVerifyImpl sharedInstanceDelegate:self] getLoginTokenWithTimeout:timeout params:params callback:callback];
+                          params:(NSDictionary *)params{
+    [[DDVerifyImpl sharedInstanceDelegate:self] getLoginTokenWithTimeout:timeout params:params];
 }
 - (void)getVerifyToken:(RCTPromiseResolveBlock)resolve
                 reject:(RCTPromiseRejectBlock)reject{

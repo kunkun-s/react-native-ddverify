@@ -13,30 +13,9 @@
 
 @interface DDVerifyImpl ()
 
-//getLoginTokenWithTimeout 传入的可选回调，与 RN_DDVERIFY_EVENT 事件内容一致
-@property (nonatomic, copy, nullable) RCTResponseSenderBlock loginCallback;
-
 @end
 
 @implementation DDVerifyImpl
-
-//授权页流程已结束的结果码。收到后释放本次调用的回调引用，避免长期持有 JS 侧闭包（页面卸载后无法回收）
-+ (NSSet<NSString *> *)loginTerminalCodes {
-    static NSSet<NSString *> *codes = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        codes = [NSSet setWithObjects:@"600000", @"600002", @"600011", @"600013", @"600014", @"600015", @"700000", nil];
-    });
-    return codes;
-}
-
-+ (BOOL)isLoginTerminalCode:(id)code {
-    if (code == nil) {
-        return NO;
-    }
-    //resultCode 可能是字符串也可能是数字，统一转成字符串再比对
-    return [[self loginTerminalCodes] containsObject:[NSString stringWithFormat:@"%@", code]];
-}
 
 /**
  取当前 keyWindow。
@@ -69,22 +48,11 @@
 }
 
 /**
- 所有下发给 JS 的结果统一走这里：
- 1. RN_DDVERIFY_EVENT 事件（保持原有行为，onVerifyEvent 监听）
- 2. getLoginTokenWithTimeout 传入的可选回调（仅本次授权页流程有效）
+ 所有下发给 JS 的结果统一走这里（RN_DDVERIFY_EVENT 事件，JS 侧 onVerifyEvent 监听）
  */
 - (void)emitEvent:(NSDictionary *)body {
     NSDictionary *payload = body ?: @{};
     [self.delegate sendJSEventWithName:@"RN_DDVERIFY_EVENT" body:payload];
-
-    RCTResponseSenderBlock callback = self.loginCallback;
-    if (callback == nil) {
-        return;
-    }
-    callback(@[payload]);
-    if ([DDVerifyImpl isLoginTerminalCode:payload[@"resultCode"]]) {
-        self.loginCallback = nil;
-    }
 }
 
 + (instancetype)sharedInstanceDelegate:(id<DDEventEmitterDelegate>)delegate {
@@ -154,12 +122,9 @@
 }
 //一键登录获取
 - (void)getLoginTokenWithTimeout:(NSString *)timeout
-                          params:(NSDictionary *)params
-                        callback:(RCTResponseSenderBlock)callback{
+                          params:(NSDictionary *)params{
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        //上一次授权页流程残留的回调先释放，避免回调到已经卸载的页面
-        self.loginCallback = callback;
         UMCustomModel * newModel = [UMModelCreate createFullScreen:params clickBlock:^(NSDictionary * _Nonnull dic) {
             //这里是自定义按钮的回调
             [self emitEvent:dic];

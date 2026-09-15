@@ -49,8 +49,8 @@ RCT_REMAP_METHOD(accelerateLoginPageWithTimeout, accelerateLoginPageWithTimeout:
    
 }
 //一键登录获取
-RCT_REMAP_METHOD(getLoginTokenWithTimeout, getLoginTokenWithTimeout:(NSString *)timeout params:(NSDictionary *)params callback:(RCTResponseSenderBlock)callback){
-    [[DDVerifyImpl sharedInstanceDelegate:self] getLoginTokenWithTimeout:timeout params:params callback:callback];
+RCT_REMAP_METHOD(getLoginTokenWithTimeout, getLoginTokenWithTimeout:(NSString *)timeout params:(NSDictionary *)params){
+    [[DDVerifyImpl sharedInstanceDelegate:self] getLoginTokenWithTimeout:timeout params:params];
 }
 //本机号码校验
 RCT_REMAP_METHOD(getVerifyToken, getVerifyTokenWithTimeout:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){

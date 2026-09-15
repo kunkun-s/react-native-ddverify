@@ -55,8 +55,8 @@ public class RNDdverifyModule extends ReactContextBaseJavaModule {
     }
     /* 一键登录 */
     @ReactMethod
-    public void getLoginTokenWithTimeout(String timeout, ReadableMap params, Callback callback){
-        dverifyImpl.getLoginTokenWithTimeout(timeout, params, callback);
+    public void getLoginTokenWithTimeout(String timeout, ReadableMap params){
+        dverifyImpl.getLoginTokenWithTimeout(timeout, params);
     }
     /* 关闭一键登录授权页 */
     @ReactMethod

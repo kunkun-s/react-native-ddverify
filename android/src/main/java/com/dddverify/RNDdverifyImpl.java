@@ -26,18 +26,12 @@ import com.umeng.umverify.view.UMAuthUIConfig;
 
 import org.json.JSONObject;
 
-import java.util.Arrays;
-import java.util.List;
-
 import javax.annotation.Nullable;
 
 //新旧架构通用原生核心方法
 public class RNDdverifyImpl {
     public static final String NAME = "NativeDDVerify"; //与NativeDDVerify.ts文件中的get<Spec>('NativeDDVerify') 保持一致
     private static final String EVENT_NAME = "RN_DDVERIFY_EVENT";
-    //授权页流程已结束的结果码。收到后释放本次调用的回调引用，避免长期持有 JS 侧闭包（页面卸载后无法回收）
-    private static final List<String> LOGIN_TERMINAL_CODE =
-            Arrays.asList("600000", "600002", "600011", "600013", "600014", "600015", "700000");
 
     private final ReactApplicationContext reactContext;
     private Boolean privacyStatus = false;//同步一键登录组件的隐私政策是否勾选
@@ -53,40 +47,16 @@ public class RNDdverifyImpl {
     //若把 Promise 放在方法局部变量里被闭包捕获，第二次调用时闭包仍指向第一次的 Promise，新 Promise 永远不会 resolve。
     private Promise mTokenPromise = null;
     private boolean mTokenRetFirst = true;
-    //getLoginTokenWithTimeout 传入的可选回调，与 RN_DDVERIFY_EVENT 事件内容一致
-    private Callback mLoginCallback = null;
 
     /**
-     * 所有下发给 JS 的结果统一走这里：
-     * 1. RN_DDVERIFY_EVENT 事件（保持原有行为，onVerifyEvent 监听）
-     * 2. getLoginTokenWithTimeout 传入的可选回调（仅本次授权页流程有效）
+     * 所有下发给 JS 的结果统一走这里（RN_DDVERIFY_EVENT 事件，JS 侧 onVerifyEvent 监听）。
      *
-     * 【必须先把值取出来、复制一份，再往下发】
-     * WritableNativeMap 是一次性的：新架构的 send 内部走 putMap -> putNativeMap，
-     * 会 consume 掉传进去的 map，之后再读会抛 ObjectAlreadyConsumedException（Map already consumed）。
-     * 所以：
-     * - resultCode 必须在 send 之前读完；
-     * - 事件和回调是两个消费者，不能共用同一个实例，回调拿副本；
-     * - 副本也必须在下发之前复制（copy 内部的 mergeNativeMap 走的是 native，用不到 Java 侧缓存）。
+     * 注意 params 交给 send 之后就被消费掉了（新架构的 send 内部走 putMap -> putNativeMap，
+     * 会把 WritableNativeMap consume 掉），之后再读会抛 ObjectAlreadyConsumedException。
+     * 所以这里不做任何读取，需要用到内容的话必须在调用前先取。
      */
     private void sendEvent(ReactApplicationContext reactContext, String eventName, @Nullable WritableMap params){
-        final String resultCode = params == null ? null : params.getString("resultCode");
-        final WritableMap callbackParams = params == null ? null : params.copy();
-
         this.callback.send(eventName, params);
-
-        Callback loginCallback = mLoginCallback;
-        if (loginCallback == null || !EVENT_NAME.equals(eventName)) {
-            return;
-        }
-        try {
-            loginCallback.invoke(callbackParams);
-        } catch (Exception e) {
-            //JS 侧已销毁（如页面已卸载），忽略
-        }
-        if (resultCode != null && LOGIN_TERMINAL_CODE.contains(resultCode)) {
-            mLoginCallback = null;
-        }
     }
 
     public RNDdverifyImpl(ReactApplicationContext reactContext, DverifyImplSendJSEvent n_callback){
@@ -294,25 +264,20 @@ public class RNDdverifyImpl {
         });
     }
 
-    public void getLoginTokenWithTimeout(String timeout, ReadableMap params, Callback callback){
-
-        //上一次授权页流程残留的回调先释放，避免回调到已经卸载的页面
-        mLoginCallback = null;
+    public void getLoginTokenWithTimeout(String timeout, ReadableMap params){
 
         if (umVerifyHelper == null || !isLogin) {
             //原来是静默 return，JS 侧永远收不到任何结果。这里补发一次"授权页唤起失败"，
-            //事件和本次回调都能拿到，不影响原有 resultCode 的判定逻辑
+            //不影响原有 resultCode 的判定逻辑
             WritableMap dic = Arguments.createMap();
             dic.putString("resultCode", "600002");
             dic.putString("msg", umVerifyHelper == null
                     ? "未初始化，请先调用 setVerifySDKInfo"
                     : "当前环境不可用，授权页未唤起");
-            mLoginCallback = callback;
             sendEvent(reactContext, EVENT_NAME, dic);
             return;
         }
 
-        mLoginCallback = callback;
         privacyStatus = false;
         String onePrivacy = "";
         String oneUrl = "";
@@ -476,8 +441,6 @@ public class RNDdverifyImpl {
     }
 
     public void cancelLoginVCAnimated(){
-        //本次授权页流程结束，释放回调引用
-        mLoginCallback = null;
         if (umVerifyHelper == null) {
             //未初始化，无需关闭（避免 NPE，componentWillUnmount 里会直接调用）
             return;

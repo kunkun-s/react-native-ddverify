@@ -43,8 +43,8 @@ public class RNDdverifyModule extends NativeDDVerifySpec {
         dverifyImpl.accelerateLoginPageWithTimeout(callback);
     }
     @Override
-    public void getLoginTokenWithTimeout(String timeout, ReadableMap params, Callback callback){
-        dverifyImpl.getLoginTokenWithTimeout(timeout, params, callback);
+    public void getLoginTokenWithTimeout(String timeout, ReadableMap params){
+        dverifyImpl.getLoginTokenWithTimeout(timeout, params);
     }
     @Override
     public void getVerifyToken(Promise promise){
